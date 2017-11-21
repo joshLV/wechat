@@ -1,0 +1,15 @@
+com\bingosoft\common\config\UrlConfig.class
+com\bingosoft\common\rocketmq\TransactionCheckListenerImpl.class
+com\bingosoft\common\rocketmq\BingoConsumer.class
+com\bingosoft\common\rocketmq\config\ProducerConfig.class
+com\bingosoft\common\rocketmq\annotation\RocketmqListener.class
+com\bingosoft\common\rocketmq\config\RocketmqAutoConfiguration$1.class
+com\bingosoft\common\rocketmq\config\RocketmqProperties.class
+com\bingosoft\common\rocketmq\config\RocketmqAutoConfiguration.class
+com\bingosoft\common\rocketmq\annotation\RocketmqEvent.class
+com\bingosoft\common\datasource\config\MyBatisMysqlConfig.class
+com\bingosoft\common\App.class
+com\bingosoft\common\rocketmq\config\ConsumerConfig.class
+com\bingosoft\common\rocketmq\BingoProducer$1.class
+com\bingosoft\common\datasource\config\MyBatisMycatConfig.class
+com\bingosoft\common\rocketmq\BingoProducer.class

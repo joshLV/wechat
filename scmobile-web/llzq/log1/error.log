@@ -1,0 +1,31 @@
+2017-11-15 11:21:06.608 [main] ERROR o.s.b.d.LoggingFailureAnalysisReporter -
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Field orderNewsService in com.bingosoft.web.controller.GoodsController required a bean of type 'com.bingosoft.core.mysql.service.IOrderNewsService' that could not be found.
+
+
+Action:
+
+Consider defining a bean of type 'com.bingosoft.core.mysql.service.IOrderNewsService' in your configuration.
+
+2017-11-15 11:24:54.891 [main] ERROR o.s.b.d.LoggingFailureAnalysisReporter -
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Field orderNewsService in com.bingosoft.web.controller.GoodsController required a bean of type 'com.bingosoft.core.mysql.service.IOrderNewsService' that could not be found.
+
+
+Action:
+
+Consider defining a bean of type 'com.bingosoft.core.mysql.service.IOrderNewsService' in your configuration.
+
+2017-11-15 15:06:29.733 [http-nio-9876-exec-1] ERROR c.b.c.m.s.impl.OrderServiceImpl -null[Ljava.lang.StackTraceElement;@b97acbd

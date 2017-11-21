@@ -1,0 +1,7 @@
+com\bingosoft\subscribe\config\RedisCacheConfiguration.class
+com\bingosoft\subscribe\config\JedisConfig.class
+com\bingosoft\subscribe\config\JedisConfiguration.class
+com\bingosoft\subscribe\ApiApplication.class
+com\bingosoft\subscribe\config\RedisConfig.class
+com\bingosoft\subscribe\rocketmq\Customer.class
+com\bingosoft\subscribe\config\RocketMQProducerConfiguration.class

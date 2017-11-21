@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >  
+<mapper namespace="com.bingosoft.persist.mysql.dao.IOrderMapper" >  
+      
+    <insert id="addOrder" parameterType="com.bingosoft.models.dto.OrderInfo">  
+        insert into order_info(order_id,user_id,user_name,phone_no,total_amount,pay_id,pay_fee,pay_note,order_desc,order_status,channel_id,create_time) 
+   		values(#{orderId},#{userId},#{userName},#{phoneNo},#{totalAmout},#{payId},#{payFee},#{payNote},#{orderDesc},#{orderStatus},#{channelId},now())  
+    </insert>  
+      
+    <insert id="addOrderItem" parameterType="com.bingosoft.models.dto.OrderItem">  
+        insert into order_items(order_id,goods_id,goods_name,goods_image,goods_count,goods_price,goods_desc,total_amount,pay_fee,order_status,create_time) 
+   		values(#{orderId},#{goodsId},#{goodName},#{goodsImage},#{goodsCount},#{goodsPrice},#{goodsDesc},#{totalAmount},#{payFee},#{orderStatus},now())
+    </insert>  
+      
+      
+</mapper>  
