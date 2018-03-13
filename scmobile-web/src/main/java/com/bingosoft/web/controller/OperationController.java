@@ -10,8 +10,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.bingosoft.core.mycat.service.IBindUserByPartService;
 import com.bingosoft.core.redis.service.IUserInfoCacheService;
 import com.bingosoft.core.web.service.IOperationService;
+import com.bingosoft.models.dto.BindUserInfoOutputDto;
+import com.bingosoft.models.dto.BindUserInputDto;
 import com.bingosoft.models.dto.CaptchaInputDto;
 import com.bingosoft.models.dto.MessageDto;
 import com.bingosoft.models.dto.MobileDto;
@@ -19,11 +22,11 @@ import com.bingosoft.models.dto.TelPhoneInputDto;
 import com.bingosoft.models.dto.UserInfoDto;
 import com.bingosoft.models.mongodb.entities.WechatUserInfo;
 import com.bingosoft.models.msg.BaseMessage;
+import com.bingosoft.models.msg.ResponseMessage;
 import com.bingosoft.persist.mongodb.dao.IWechatUserInfoRepository;
 import com.bingosoft.utils.JSONUtils;
 import com.bingosoft.utils.crypt.TokenUtils;
 import com.bingosoft.web.exception.WechatException;
-
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -32,30 +35,35 @@ import io.swagger.annotations.ApiOperation;
 @RequestMapping("/operation/api/v1")
 @RestController
 public class OperationController {
+
+	
 	
 	private Logger logger = Logger.getLogger(getClass());
+
+	@Autowired
+	IBindUserByPartService bingUserService;
 	
 	@Autowired
 	private IOperationService opService;
-	
+
 	@Autowired
 	IUserInfoCacheService userCacheService;
-	
+
 	String tokenHeader = "os";
-	
+
 	@Autowired
 	IWechatUserInfoRepository wechatUserInfo;
-	
+
 	@ApiOperation(value = "获取短信验证码", notes = "获取短信验证码")
 	@RequestMapping(value = "/sendCaptcha", method = RequestMethod.POST)
 	public BaseMessage sendCaptcha(HttpServletRequest request, @RequestBody CaptchaInputDto input)
 			throws WechatException {
-		UserInfoDto userDto = null;//new UserInfoDto();
-//		String token = request.getHeader(tokenHeader);
-//		if (StringUtils.isEmpty(token)) {
-//			return new BaseMessage(502, true, "非法请求");
-//		}
-//		userDto = userCacheService.getUser(token);
+		UserInfoDto userDto = null;// new UserInfoDto();
+		// String token = request.getHeader(tokenHeader);
+		// if (StringUtils.isEmpty(token)) {
+		// return new BaseMessage(502, true, "非法请求");
+		// }
+		// userDto = userCacheService.getUser(token);
 		MessageDto dtos = validateBaseToken(request);
 		userDto = dtos.getUserInfo();
 		if (userDto == null) {
@@ -74,28 +82,28 @@ public class OperationController {
 
 	@ApiOperation(value = "绑定手机号", notes = "绑定手机号")
 	@RequestMapping(value = "/telbindbycaptcha", method = RequestMethod.POST)
-	public BaseMessage telbindbycaptcha(HttpServletRequest request, @RequestBody TelPhoneInputDto input)
-			throws WechatException {
+	public ResponseMessage<BindUserInfoOutputDto> telbindbycaptcha(HttpServletRequest request,
+			@RequestBody TelPhoneInputDto input) throws WechatException {
 		// UserInfoDto userDto = null;
-		UserInfoDto userDto = null;//new UserInfoDto();
-//		String token = request.getHeader(tokenHeader);
-//		if (StringUtils.isEmpty(token)) {
-//			return new BaseMessage(502, true, "非法请求");
-//		}
-//		userDto = userCacheService.getUser(token);
+		UserInfoDto userDto = null;// new UserInfoDto();
+		// String token = request.getHeader(tokenHeader);
+		// if (StringUtils.isEmpty(token)) {
+		// return new BaseMessage(502, true, "非法请求");
+		// }
+		// userDto = userCacheService.getUser(token);
 		MessageDto dtos = validateBaseToken(request);
 		userDto = dtos.getUserInfo();
 		if (userDto == null) {
-			return new BaseMessage(dtos.getStatus(), true, dtos.getMessage());
+			return new ResponseMessage<BindUserInfoOutputDto>(dtos.getStatus(), true, dtos.getMessage());
 		}
 		try {
 			MobileDto dto = opService.telbindbycaptcha(userDto.getOpenId(), input.getTelNum(), input.getCaptcha());
-			logger.info("绑定信息"+dto.getMessage()+"状态码:"+dto.getStatus());
+			logger.info("绑定信息" + dto.getMessage() + "状态码:" + dto.getStatus());
 			if (dto.getMessage().equals("绑定成功")) {
-				
+
 				userDto.setPhoenNo(input.getTelNum());
 				userDto.setUserId(input.getTelNum());
-				//userCacheService.setUser(token, userDto);
+				// userCacheService.setUser(token, userDto);
 				String token = TokenUtils.encrypt(JSONUtils.toJson(userDto));
 				WechatUserInfo wechat = new WechatUserInfo();
 				wechat.setHeadImg(userDto.getHeadImg());
@@ -103,13 +111,40 @@ public class OperationController {
 				wechat.setPhoenNo(userDto.getPhoenNo());
 				wechat.setUserId(userDto.getUserId());
 				wechat.setUserName(userDto.getUserName());
-				wechatUserInfo.save(wechat);
-				return new BaseMessage(200, true, token);
+				BindUserInputDto inDto=new BindUserInputDto();
+				inDto.setModuleId(input.getModuleId());
+				inDto.setOpenId(userDto.getOpenId());
+				inDto.setPhoneNo(userDto.getPhoenNo());
+				inDto.setPartId(getPartId(userDto.getPhoenNo()));
+				inDto.setSubscribeTime(userDto.getSubscribeTime());
+				if(!StringUtils.isEmpty(input.getShare()))
+				{
+					String sharePhone=TokenUtils.decrypt(input.getShare());
+					inDto.setSharePhoneNo(sharePhone);
+				}
+				
+				BindUserInfoOutputDto outDto = new BindUserInfoOutputDto();
+				String shareId = "";
+				try {
+					bingUserService.addUser(inDto);
+					wechatUserInfo.save(wechat);
+					shareId = TokenUtils.encrypt(userDto.getPhoenNo());
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				outDto.setShare(shareId);
+				outDto.setToken(token);
+				return new ResponseMessage<BindUserInfoOutputDto>(200, true, token, outDto);
 			}
-			return new BaseMessage(400, true, dto.getMessage());
+			return new ResponseMessage<BindUserInfoOutputDto>(400, true, dto.getMessage());
 		} catch (Exception ex) {
 			throw new WechatException(ex.getMessage());
 		}
+	}
+
+	private int getPartId(String phoneNo) {
+		return Integer.valueOf(phoneNo.substring(10));
 	}
 	
 	@SuppressWarnings("unused")

@@ -63,6 +63,24 @@ public class DateUtils {
 		return date;
 	}
 
+	/**
+	 * 获取当前时间
+	 * 
+	 * @return
+	 */
+	public static String getDateToFormatStr() {
+
+		SimpleDateFormat sd = new SimpleDateFormat("yyyy-MM-dd HH:mm:sss");
+		String date = "";
+		try {
+			date = sd.format(new Date());
+		} catch (Exception e) {
+
+			e.printStackTrace();
+		}
+		return date;
+	}
+
 	public static String getDateByStr(Date dd) {
 
 		SimpleDateFormat sd = new SimpleDateFormat("HH:mm");
@@ -70,16 +88,44 @@ public class DateUtils {
 		date = sd.format(dd);
 		return date;
 	}
+
+	public static String formatToNaturalDate(String strDate) {
+		String year = strDate.substring(0, 4);
+		String month = strDate.substring(4, 6);
+		String day = strDate.substring(6, 8);
+		String hour = strDate.substring(8, 10);
+		String minute = strDate.substring(10, 12);
+		String s = strDate.substring(12, 14);
+
+		return String.format("%s-%s-%s %s:%s:%s", year, month, day, hour, minute, s);
+	}
+
+	public static String formatToDate(String strDate) {
+		String year = strDate.substring(0, 4);
+		String month = strDate.substring(4, 6);
+		String day = strDate.substring(6, 8);
+		String hour = strDate.substring(8, 10);
+		String minute = strDate.substring(10, 12);
+		String s = strDate.substring(12, 14);
+
+		return String.format("%s年%s月%s日 %s时%s分%s秒", year, month, day, hour, minute, s);
+	}
+
+	public static long getTimeInMillis() {
+
+		Date dt = new Date();
+		dt.setHours(23);
+		dt.setMinutes(59);
+		dt.setSeconds(59);
+		return dt.getTime();
+	}
 	
-	public static String formatToNaturalDate(String strDate) {  
-        String year = strDate.substring(0,4);  
-        String month = strDate.substring(4,6);  
-        String day = strDate.substring(6,8);  
-        String hour = strDate.substring(8,10);  
-        String minute = strDate.substring(10,12); 
-        String s = strDate.substring(12,14);
-          
-        return String.format("%s-%s-%s %s:%s:%s", year, month, day, hour, minute,s);  
+	/** 
+     * 使用参数Format格式化Date成字符串 
+     */  
+    public static String format(Date date, String pattern)  
+    {  
+        return date == null ? " " : new SimpleDateFormat(pattern).format(date);  
     }  
 
 }

@@ -68,13 +68,14 @@ public class LoginController {
 					user.setOpenId(dto.getOpenid());
 					user.setUserName(dto.getNickname());
 					user.setPhoenNo(dto.getTelnum());
+					user.setSubscribeTime(dto.getSubscribeTime());
 					if (StringUtils.isEmpty(dto.getTelnum()))
 						user.setUserId(dto.getOpenid());
 					else
 						user.setUserId(dto.getTelnum());
 					if (dto == null && StringUtils.isEmpty(dto.getOpenid())) {
 						try {
-							httpResponse.sendRedirect("http://wx.10086.cn/sichuan/wxzq/llzq/author?token=none");
+							httpResponse.sendRedirect("http://wx.10086.cn/sichuan/wxzq/llzq/author.html?token=none");
 						} catch (IOException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
@@ -83,7 +84,7 @@ public class LoginController {
 					}
 					if (dto.getStatus() == 3001) {
 						try {
-							httpResponse.sendRedirect("http://wx.10086.cn/sichuan/wxzq/llzq/qrcode");
+							httpResponse.sendRedirect("http://wx.10086.cn/sichuan/wxzq/llzq/qrcode.html");
 						} catch (IOException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
@@ -98,7 +99,13 @@ public class LoginController {
 							e1.printStackTrace();
 						} // CmccDesUtil.encode(user.getOpenId())
 							// ;//CryptoUtils.encodeSHA(user.getOpenId());
-						String shareId = ShareDesUtils.encode(user.getOpenId());
+						String shareId="";
+						try {
+							shareId = TokenUtils.encrypt(user.getPhoenNo());
+						} catch (Exception e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
 						// 目前取微信生成的token作为用户缓存的key
 						// userInfoService.addUser(user, desOpenId);
 						WechatUserInfo wechat = new WechatUserInfo();
@@ -111,7 +118,7 @@ public class LoginController {
 						// wechat.setId(user.getOpenId());
 						try {
 							httpResponse.sendRedirect(
-									"http://wx.10086.cn/sichuan/wxzq/llzq/author.html?os=" + desOpenId + "&share=" + shareId);
+									"http://wx.10086.cn/sichuan/wxzq/llzq/author.html?os=" + desOpenId + "&token=" + shareId);
 							// if (!url.contains("?"))
 							// httpResponse.sendRedirect(url + "?token=" + desOpenId);
 							// else

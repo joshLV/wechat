@@ -33,6 +33,11 @@ public class RedisKeyPrefix {
    public static final String GoodsInfo_Prefix="goods_info:%s";
    
    /**
+    * 商品信息%s redis.key
+    */
+   public static final String CateGoodsInfo_Prefix="cate:goods_info:%s";
+   
+   /**
     * 热门商品%s redis.key
     */
    public static final String HotGoodsCategory_Prefix="hotgoodscate:p:%s:r:%s";
@@ -51,6 +56,28 @@ public class RedisKeyPrefix {
     * 文字查看次数
     */
    public static final String ArticleViewCount_Prefix="article:view:%s";
+   
+   /**
+    * 销售数量缓存
+    */
+   public static final String GoodsSale_Prefix="goods:sale:count:json";
+   
+   /**
+    * 抽奖次数
+    */
+   public static final String Chance_Prefix="game:chance:%s";
+   
+   /**
+    * 规则
+    */
+   public static final String GameRule_Prefix="game:rule";
+   
+   /**
+    * 是否分享
+    */
+   public static final String GameShare_Prefix="game:share:%s";
+   
+   public static final String Order_Game_Share_Prefix="game:share:%s:%s";
    
    
 }

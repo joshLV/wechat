@@ -1,5 +1,7 @@
 package com.bingosoft.utils;
 
+import com.bingosoft.utils.crypt.TokenUtils;
+
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
@@ -33,6 +35,11 @@ public class AppTest
      */
     public void testApp()
     {
-        assertTrue( true );
+    	try {
+			System.out.println(TokenUtils.encrypt("13548074395"));
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     }
 }

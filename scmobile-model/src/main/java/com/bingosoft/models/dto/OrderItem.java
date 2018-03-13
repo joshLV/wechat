@@ -21,4 +21,5 @@ public class OrderItem {
 	private int orderStatus;
 	private Date createTime;
 	private int categoryId;
+	private String effectiveTime="";
 }

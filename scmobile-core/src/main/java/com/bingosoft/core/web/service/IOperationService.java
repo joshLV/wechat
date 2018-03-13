@@ -1,6 +1,7 @@
 package com.bingosoft.core.web.service;
 
 import com.bingosoft.models.dto.FansInfoByOauthDto;
+import com.bingosoft.models.dto.FansInfoByOauthV2Dto;
 import com.bingosoft.models.dto.JsSignatureDto;
 import com.bingosoft.models.dto.MobileDto;
 import com.bingosoft.models.dto.TemplateMessageInputDto;
@@ -66,4 +67,6 @@ public interface IOperationService {
 	 * @return
 	 */
 	MobileDto templateMessage(TemplateMessageInputDto input);
+	
+	FansInfoByOauthV2Dto getFansInfoByOauth2_v2(String accountId,String code);
 }

@@ -28,14 +28,14 @@ import io.swagger.annotations.ApiOperation;
 
 @Api(value = "流量专区", description = "手机App授权Api")
 @RestController
-@RequestMapping("/auth/api/v1")
+@RequestMapping("/rest/api/v1")
 public class AuthController {
 	
 	@Autowired
 	IWechatUserInfoRepository wechatUserInfo;
 	
 	@ApiOperation(value = "手机端App授权", notes = "手机端App授权")
-	@RequestMapping(value = "/AppAuth", method = RequestMethod.POST)
+	@RequestMapping(value = "/appUser", method = RequestMethod.POST)
 	public ResponseMessage<BindUserInfoOutputDto> AppAuth(HttpServletRequest request
 			) throws WechatException {
 		// UserInfoDto userDto = new UserInfoDto();

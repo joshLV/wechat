@@ -1,6 +1,7 @@
 com\bingosoft\persist\mysql\dao\IOrderNewsMapper.class
 com\bingosoft\persist\mysql\dao\IGoodsMapper.class
 com\bingosoft\persist\mysql\dao\IBrowseRecordsMapper.class
+com\bingosoft\persist\mysql\dao\GameInfoMapper.class
 com\bingosoft\persist\redis\dao\impl\RedisServiceImpl$7.class
 com\bingosoft\persist\mongodb\dao\IUserInfoRepository.class
 com\bingosoft\persist\mysql\dao\IOrderMapper.class
@@ -8,8 +9,10 @@ com\bingosoft\persist\mongodb\dao\IUserPhoneRepository.class
 com\bingosoft\persist\mongodb\dao\IWechatUserInfoRepository.class
 com\bingosoft\persist\redis\dao\impl\RedisServiceImpl$3.class
 com\bingosoft\persist\redis\dao\impl\RedisServiceImpl$9.class
+com\bingosoft\persist\mycat\dao\IWxShareByPartMapper.class
 com\bingosoft\persist\redis\dao\impl\RedisServiceImpl.class
 com\bingosoft\persist\mycat\dao\IBrowseRecordsByPartMapper.class
+com\bingosoft\persist\mycat\dao\IBindUserByPartMapper.class
 com\bingosoft\persist\mysql\dao\IAdInfoMapper.class
 com\bingosoft\persist\mysql\dao\IArticleInfoMapper.class
 com\bingosoft\persist\redis\dao\impl\RedisServiceImpl$1.class

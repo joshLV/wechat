@@ -7,4 +7,6 @@ import lombok.Data;
 public class TelPhoneInputDto {
    private String telNum;
    private String captcha;
+   private int moduleId;
+   private String share;
 }

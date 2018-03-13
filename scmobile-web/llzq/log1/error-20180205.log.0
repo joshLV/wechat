@@ -1,0 +1,176 @@
+2018-02-05 19:43:05.246 [main] ERROR o.s.b.d.LoggingFailureAnalysisReporter -
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Field gameInfoService in com.bingosoft.core.mycat.service.impl.OrderByPartServiceImpl required a bean of type 'com.bingosoft.core.mysql.service.IGameInfoService' that could not be found.
+
+
+Action:
+
+Consider defining a bean of type 'com.bingosoft.core.mysql.service.IGameInfoService' in your configuration.
+
+2018-02-05 19:48:47.325 [main] ERROR o.s.b.d.LoggingFailureAnalysisReporter -
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Field gameInfoService in com.bingosoft.core.mycat.service.impl.OrderByPartServiceImpl required a bean of type 'com.bingosoft.core.mysql.service.IGameInfoService' that could not be found.
+
+
+Action:
+
+Consider defining a bean of type 'com.bingosoft.core.mysql.service.IGameInfoService' in your configuration.
+
+2018-02-05 19:56:12.718 [main] ERROR o.s.b.d.LoggingFailureAnalysisReporter -
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Field gameInfoService in com.bingosoft.core.mycat.service.impl.OrderByPartServiceImpl required a bean of type 'com.bingosoft.core.mysql.service.IGameInfoService' that could not be found.
+
+
+Action:
+
+Consider defining a bean of type 'com.bingosoft.core.mysql.service.IGameInfoService' in your configuration.
+
+2018-02-05 19:59:10.968 [XNIO-2 task-1] ERROR io.undertow.request -UT005023: Exception handling request to /goods/api/v2/orderGoods
+org.springframework.web.util.NestedServletException: Request processing failed; nested exception is java.lang.IllegalStateException: org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@65f8f5ae has been closed already
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:982)
+	at org.springframework.web.servlet.FrameworkServlet.doPost(FrameworkServlet.java:872)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:707)
+	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:846)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:790)
+	at io.undertow.servlet.handlers.ServletHandler.handleRequest(ServletHandler.java:85)
+	at io.undertow.servlet.handlers.FilterHandler$FilterChainImpl.doFilter(FilterHandler.java:129)
+	at com.bingosoft.web.filter.CorsFilter.doFilter(CorsFilter.java:28)
+	at io.undertow.servlet.core.ManagedFilter.doFilter(ManagedFilter.java:61)
+	at io.undertow.servlet.handlers.FilterHandler$FilterChainImpl.doFilter(FilterHandler.java:131)
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:197)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:107)
+	at io.undertow.servlet.core.ManagedFilter.doFilter(ManagedFilter.java:61)
+	at io.undertow.servlet.handlers.FilterHandler$FilterChainImpl.doFilter(FilterHandler.java:131)
+	at io.undertow.servlet.handlers.FilterHandler.handleRequest(FilterHandler.java:84)
+	at io.undertow.servlet.handlers.security.ServletSecurityRoleHandler.handleRequest(ServletSecurityRoleHandler.java:62)
+	at io.undertow.servlet.handlers.ServletChain$1.handleRequest(ServletChain.java:64)
+	at io.undertow.servlet.handlers.ServletDispatchingHandler.handleRequest(ServletDispatchingHandler.java:36)
+	at io.undertow.servlet.handlers.security.SSLInformationAssociationHandler.handleRequest(SSLInformationAssociationHandler.java:131)
+	at io.undertow.servlet.handlers.security.ServletAuthenticationCallHandler.handleRequest(ServletAuthenticationCallHandler.java:57)
+	at io.undertow.server.handlers.PredicateHandler.handleRequest(PredicateHandler.java:43)
+	at io.undertow.security.handlers.AbstractConfidentialityHandler.handleRequest(AbstractConfidentialityHandler.java:46)
+	at io.undertow.servlet.handlers.security.ServletConfidentialityConstraintHandler.handleRequest(ServletConfidentialityConstraintHandler.java:64)
+	at io.undertow.security.handlers.AuthenticationMechanismsHandler.handleRequest(AuthenticationMechanismsHandler.java:60)
+	at io.undertow.servlet.handlers.security.CachedAuthenticatedSessionHandler.handleRequest(CachedAuthenticatedSessionHandler.java:77)
+	at io.undertow.security.handlers.AbstractSecurityContextAssociationHandler.handleRequest(AbstractSecurityContextAssociationHandler.java:43)
+	at io.undertow.server.handlers.PredicateHandler.handleRequest(PredicateHandler.java:43)
+	at io.undertow.server.handlers.PredicateHandler.handleRequest(PredicateHandler.java:43)
+	at io.undertow.servlet.handlers.ServletInitialHandler.handleFirstRequest(ServletInitialHandler.java:292)
+	at io.undertow.servlet.handlers.ServletInitialHandler.access$100(ServletInitialHandler.java:81)
+	at io.undertow.servlet.handlers.ServletInitialHandler$2.call(ServletInitialHandler.java:138)
+	at io.undertow.servlet.handlers.ServletInitialHandler$2.call(ServletInitialHandler.java:135)
+	at io.undertow.servlet.core.ServletRequestContextThreadSetupAction$1.call(ServletRequestContextThreadSetupAction.java:48)
+	at io.undertow.servlet.core.ContextClassLoaderSetupAction$1.call(ContextClassLoaderSetupAction.java:43)
+	at io.undertow.servlet.handlers.ServletInitialHandler.dispatchRequest(ServletInitialHandler.java:272)
+	at io.undertow.servlet.handlers.ServletInitialHandler.access$000(ServletInitialHandler.java:81)
+	at io.undertow.servlet.handlers.ServletInitialHandler$1.handleRequest(ServletInitialHandler.java:104)
+	at io.undertow.server.Connectors.executeRootHandler(Connectors.java:332)
+	at io.undertow.server.HttpServerExchange$1.run(HttpServerExchange.java:812)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.lang.IllegalStateException: org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@65f8f5ae has been closed already
+	at org.springframework.context.support.AbstractApplicationContext.assertBeanFactoryActive(AbstractApplicationContext.java:1062)
+	at org.springframework.context.support.AbstractApplicationContext.getBean(AbstractApplicationContext.java:1077)
+	at org.springframework.web.method.ControllerAdviceBean.resolveBean(ControllerAdviceBean.java:146)
+	at org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver.getExceptionHandlerMethod(ExceptionHandlerExceptionResolver.java:447)
+	at org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver.doResolveHandlerMethodException(ExceptionHandlerExceptionResolver.java:362)
+	at org.springframework.web.servlet.handler.AbstractHandlerMethodExceptionResolver.doResolveException(AbstractHandlerMethodExceptionResolver.java:59)
+	at org.springframework.web.servlet.handler.AbstractHandlerExceptionResolver.resolveException(AbstractHandlerExceptionResolver.java:136)
+	at org.springframework.web.servlet.handler.HandlerExceptionResolverComposite.resolveException(HandlerExceptionResolverComposite.java:76)
+	at org.springframework.web.servlet.DispatcherServlet.processHandlerException(DispatcherServlet.java:1222)
+	at org.springframework.web.servlet.DispatcherServlet.processDispatchResult(DispatcherServlet.java:1034)
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:984)
+	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:901)
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:970)
+	... 41 common frames omitted
+2018-02-05 19:59:11.218 [XNIO-2 task-1] ERROR io.undertow.request -UT005022: Exception generating error page /error
+javax.servlet.ServletException: UT010051: Deployment spring-boot has stopped
+	at io.undertow.servlet.core.ManagedServlet.forceInit(ManagedServlet.java:183)
+	at io.undertow.servlet.handlers.ServletChain.forceInit(ServletChain.java:107)
+	at io.undertow.servlet.handlers.ServletChain$1.handleRequest(ServletChain.java:60)
+	at io.undertow.servlet.handlers.ServletDispatchingHandler.handleRequest(ServletDispatchingHandler.java:36)
+	at io.undertow.server.handlers.PredicateHandler.handleRequest(PredicateHandler.java:43)
+	at io.undertow.server.handlers.PredicateHandler.handleRequest(PredicateHandler.java:43)
+	at io.undertow.servlet.handlers.ServletInitialHandler.dispatchRequest(ServletInitialHandler.java:274)
+	at io.undertow.servlet.handlers.ServletInitialHandler.dispatchToPath(ServletInitialHandler.java:209)
+	at io.undertow.servlet.spec.RequestDispatcherImpl.error(RequestDispatcherImpl.java:479)
+	at io.undertow.servlet.spec.RequestDispatcherImpl.error(RequestDispatcherImpl.java:412)
+	at io.undertow.servlet.handlers.ServletInitialHandler.handleFirstRequest(ServletInitialHandler.java:319)
+	at io.undertow.servlet.handlers.ServletInitialHandler.access$100(ServletInitialHandler.java:81)
+	at io.undertow.servlet.handlers.ServletInitialHandler$2.call(ServletInitialHandler.java:138)
+	at io.undertow.servlet.handlers.ServletInitialHandler$2.call(ServletInitialHandler.java:135)
+	at io.undertow.servlet.core.ServletRequestContextThreadSetupAction$1.call(ServletRequestContextThreadSetupAction.java:48)
+	at io.undertow.servlet.core.ContextClassLoaderSetupAction$1.call(ContextClassLoaderSetupAction.java:43)
+	at io.undertow.servlet.handlers.ServletInitialHandler.dispatchRequest(ServletInitialHandler.java:272)
+	at io.undertow.servlet.handlers.ServletInitialHandler.access$000(ServletInitialHandler.java:81)
+	at io.undertow.servlet.handlers.ServletInitialHandler$1.handleRequest(ServletInitialHandler.java:104)
+	at io.undertow.server.Connectors.executeRootHandler(Connectors.java:332)
+	at io.undertow.server.HttpServerExchange$1.run(HttpServerExchange.java:812)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+	at java.lang.Thread.run(Thread.java:745)
+2018-02-05 20:01:31.934 [XNIO-2 task-3] ERROR c.b.web.controller.GoodsV2Controller -goodsController:
+### Error updating database.  Cause: com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: Table 'wxcrm.fail_order_info' doesn't exist
+### The error may involve com.bingosoft.persist.mycat.dao.IOrderByPartMapper.addFailOrder-Inline
+### The error occurred while setting parameters
+### SQL: insert into fail_order_info(order_id,user_id,user_name,phone_no,total_amount,pay_id,pay_fee,pay_note,order_desc,order_status,channel_id,create_time,part_id)  values(?,?,?,?,?,?,?,?,?,?,?,unix_timestamp(now()),?)
+### Cause: com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: Table 'wxcrm.fail_order_info' doesn't exist
+; bad SQL grammar []; nested exception is com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: Table 'wxcrm.fail_order_info' doesn't exist[Ljava.lang.StackTraceElement;@5297acac
+2018-02-05 20:01:31.945 [XNIO-2 task-3] ERROR c.b.web.controller.GoodsV2Controller -{"orderId":1802052001278491704,"userId":"13548074395","userName":"與夢同荇","phoneNo":"13548074395","totalAmout":0,"payId":1,"payFee":6.0,"payNote":"fhdk","orderStatus":1,"channelId":1,"partId":5,"orderItem":[{"itemId":1802052001281631704,"PROD_PRCID":"ACAZ25810","orderId":1802052001278491704,"partId":5,"goodsId":10002,"goodsName":"4小时500M","goodsImage":"images/img-package01.png","goodsCount":1,"goodsPrice":6.0,"goodsDesc":"\u003cp\u003e6元包含500M国内流量，5分钟后生效，4小时有效，闲时时段订购享5折优惠，当月可多次订购，更多介绍见业务详情。\u003c/p\u003e","totalAmout":1.0,"payFee":6.0,"orderStatus":1,"createTime":"Feb 5, 2018 8:01:28 PM","categoryId":1001,"effectiveTime":"5分钟后生效"}]}
+2018-02-05 20:01:31.947 [XNIO-2 task-3] ERROR c.b.web.controller.GoodsV2Controller -{"rstCode":0}
+2018-02-05 20:02:02.211 [XNIO-2 task-3] ERROR c.b.web.controller.GoodsV2Controller -timeoutOrder:
+### Error updating database.  Cause: com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: Table 'wxcrm.fail_order_info' doesn't exist
+### The error may involve com.bingosoft.persist.mycat.dao.IOrderByPartMapper.addFailOrder-Inline
+### The error occurred while setting parameters
+### SQL: insert into fail_order_info(order_id,user_id,user_name,phone_no,total_amount,pay_id,pay_fee,pay_note,order_desc,order_status,channel_id,create_time,part_id)  values(?,?,?,?,?,?,?,?,?,?,?,unix_timestamp(now()),?)
+### Cause: com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: Table 'wxcrm.fail_order_info' doesn't exist
+; bad SQL grammar []; nested exception is com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: Table 'wxcrm.fail_order_info' doesn't exist[Ljava.lang.StackTraceElement;@36086d95
+2018-02-05 20:03:31.493 [XNIO-2 task-4] ERROR c.b.web.controller.GoodsV2Controller -goodsController:
+### Error updating database.  Cause: com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: Table 'wxcrm.fail_order_info' doesn't exist
+### The error may involve com.bingosoft.persist.mycat.dao.IOrderByPartMapper.addFailOrder-Inline
+### The error occurred while setting parameters
+### SQL: insert into fail_order_info(order_id,user_id,user_name,phone_no,total_amount,pay_id,pay_fee,pay_note,order_desc,order_status,channel_id,create_time,part_id)  values(?,?,?,?,?,?,?,?,?,?,?,unix_timestamp(now()),?)
+### Cause: com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: Table 'wxcrm.fail_order_info' doesn't exist
+; bad SQL grammar []; nested exception is com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: Table 'wxcrm.fail_order_info' doesn't exist[Ljava.lang.StackTraceElement;@3c6af46
+2018-02-05 20:03:31.494 [XNIO-2 task-4] ERROR c.b.web.controller.GoodsV2Controller -{"orderId":1802052003310921704,"userId":"13548074395","userName":"與夢同荇","phoneNo":"13548074395","totalAmout":0,"payId":1,"payFee":6.0,"payNote":"fhdk","orderStatus":1,"channelId":1,"partId":5,"orderItem":[{"itemId":1802052003312701704,"PROD_PRCID":"ACAZ25810","orderId":1802052003310921704,"partId":5,"goodsId":10002,"goodsName":"4小时500M","goodsImage":"images/img-package01.png","goodsCount":1,"goodsPrice":6.0,"goodsDesc":"\u003cp\u003e6元包含500M国内流量，5分钟后生效，4小时有效，闲时时段订购享5折优惠，当月可多次订购，更多介绍见业务详情。\u003c/p\u003e","totalAmout":1.0,"payFee":6.0,"orderStatus":1,"createTime":"Feb 5, 2018 8:03:31 PM","categoryId":1001,"effectiveTime":"5分钟后生效"}]}
+2018-02-05 20:03:31.495 [XNIO-2 task-4] ERROR c.b.web.controller.GoodsV2Controller -{"rstCode":0}
+2018-02-05 20:04:01.587 [XNIO-2 task-4] ERROR c.b.web.controller.GoodsV2Controller -timeoutOrder:
+### Error updating database.  Cause: com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: Table 'wxcrm.fail_order_info' doesn't exist
+### The error may involve com.bingosoft.persist.mycat.dao.IOrderByPartMapper.addFailOrder-Inline
+### The error occurred while setting parameters
+### SQL: insert into fail_order_info(order_id,user_id,user_name,phone_no,total_amount,pay_id,pay_fee,pay_note,order_desc,order_status,channel_id,create_time,part_id)  values(?,?,?,?,?,?,?,?,?,?,?,unix_timestamp(now()),?)
+### Cause: com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: Table 'wxcrm.fail_order_info' doesn't exist
+; bad SQL grammar []; nested exception is com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: Table 'wxcrm.fail_order_info' doesn't exist[Ljava.lang.StackTraceElement;@44728216
+2018-02-05 20:32:58.345 [XNIO-2 task-1] ERROR c.b.web.controller.WxShareController -shareGoods:
+### Error updating database.  Cause: com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: Unknown column 'share_time' in 'field list'
+### The error may involve com.bingosoft.persist.mycat.dao.IWxShareByPartMapper.AddShareLog-Inline
+### The error occurred while setting parameters
+### SQL: insert into game_share_record (share_id,part_id,share_time,rule_id,share_module_id,share_page,share_phone,share_status,share_note) values(?,?,now(),?,?,?,?,?,?)
+### Cause: com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: Unknown column 'share_time' in 'field list'
+; bad SQL grammar []; nested exception is com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: Unknown column 'share_time' in 'field list'[Ljava.lang.StackTraceElement;@62c0040b
+2018-02-05 21:12:42.387 [XNIO-2 task-2] ERROR c.b.web.controller.WxShareController -shareGoods:
+### Error updating database.  Cause: com.mysql.jdbc.MysqlDataTruncation: Data truncation: Out of range value for column 'share_module_id' at row 1
+### The error may involve com.bingosoft.persist.mycat.dao.IWxShareByPartMapper.AddShareLog-Inline
+### The error occurred while setting parameters
+### SQL: insert into game_share_record (share_id,part_id,share_time,rule_id,share_module_id,share_page,share_phone,share_status,share_note) values(?,?,now(),?,?,?,?,?,?)
+### Cause: com.mysql.jdbc.MysqlDataTruncation: Data truncation: Out of range value for column 'share_module_id' at row 1
+; SQL []; Data truncation: Out of range value for column 'share_module_id' at row 1; nested exception is com.mysql.jdbc.MysqlDataTruncation: Data truncation: Out of range value for column 'share_module_id' at row 1[Ljava.lang.StackTraceElement;@39aa2e7a

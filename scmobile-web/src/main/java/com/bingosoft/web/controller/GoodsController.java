@@ -75,10 +75,12 @@ import com.bingosoft.models.rest.dto.RestResponseOutputDto;
 import com.bingosoft.models.rest.dto.SPFeeQueryOutputDto;
 import com.bingosoft.persist.mongodb.dao.IUserPhoneRepository;
 import com.bingosoft.persist.mongodb.dao.IWechatUserInfoRepository;
+import com.bingosoft.persist.redis.dao.IRedisService;
 import com.bingosoft.utils.CmccDesUtils;
 import com.bingosoft.utils.FlowConvertUtils;
 import com.bingosoft.utils.IdGenerator;
 import com.bingosoft.utils.JSONUtils;
+import com.bingosoft.utils.LuaScriptUtils;
 import com.bingosoft.utils.crypt.CryptoUtils;
 import com.bingosoft.utils.crypt.Des;
 import com.bingosoft.utils.crypt.ShareDesUtils;
@@ -127,6 +129,9 @@ public class GoodsController {
 	IUserInfoCacheService userCacheService;
 
 	String tokenHeader = "os";
+	
+	@Autowired
+	IRedisService redisService;
 
 	@Autowired
 	IUserPhoneRepository userPhone;
@@ -429,7 +434,7 @@ public class GoodsController {
 		item.setItemId(Long.parseLong(IdGenerator.INSTANCE.nextId()));
 		String prod_id = "";
 		if (rst.getFeeCode().contains("\\")) {
-			prod_id = rst.getFeeCode().split("\\")[0];
+			prod_id = rst.getFeeCode().split("\\\\")[0];
 		} else {
 			prod_id = rst.getFeeCode();
 		}
@@ -445,7 +450,7 @@ public class GoodsController {
 			TemplateData data = new TemplateData();
 			MessageObject first = new MessageObject();
 			MessageObject keyword1 = new MessageObject();
-			first.setValue("你好，你的流量订购成功");
+			first.setValue("你好，你的流量订购成功,业务将在5分钟后生效");
 			data.setFirst(first);
 			keyword1.setValue(rst.getGoodsName());
 			MessageObject keyword2 = new MessageObject();
@@ -748,6 +753,15 @@ public class GoodsController {
 
 		List<HotCategoryGoodsOutputDto> goods = goodsInfoService.getHotCategoryGoodsSaleCount();
 		return new ResponseMessage<List<HotCategoryGoodsOutputDto>>(200, true, "成功", goods);
+	}
+	
+	@ApiOperation(value = "获取分类订购次数", notes = "获取分类订购次数")
+	@RequestMapping(value = "/testReis", method = RequestMethod.GET)
+	public ResponseMessage<String> testReis(HttpServletRequest request) {
+
+		String[] params = { "test1", "test2" };
+		String rst=redisService.evalScript(LuaScriptUtils.CATE_INCR_BY_KEY, 2, params);
+		return new ResponseMessage<String>(200, true, "成功", rst);
 	}
 
 	@SuppressWarnings("unused")

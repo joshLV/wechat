@@ -52,4 +52,5 @@ wechat:
 spring:  
   data:  
     mongodb:  
-      uri: mongodb://120.197.17.151:22001/wxcrm  
+      uri: mongodb://120.197.17.151:20210/wxcrm  
+      

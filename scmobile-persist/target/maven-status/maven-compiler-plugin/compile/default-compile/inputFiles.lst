@@ -1,5 +1,6 @@
 C:\Users\Administrator\Documents\workspace-sts-3.9.0.RELEASE\scmobile-wechat\scmobile-persist\src\main\java\com\bingosoft\persist\mycat\dao\IOrderByPartMapper.java
 C:\Users\Administrator\Documents\workspace-sts-3.9.0.RELEASE\scmobile-wechat\scmobile-persist\src\main\java\com\bingosoft\persist\redis\dao\IRedisService.java
+C:\Users\Administrator\Documents\workspace-sts-3.9.0.RELEASE\scmobile-wechat\scmobile-persist\src\main\java\com\bingosoft\persist\mycat\dao\IWxShareByPartMapper.java
 C:\Users\Administrator\Documents\workspace-sts-3.9.0.RELEASE\scmobile-wechat\scmobile-persist\src\main\java\com\bingosoft\persist\mysql\dao\IArticleCategoryMapper.java
 C:\Users\Administrator\Documents\workspace-sts-3.9.0.RELEASE\scmobile-wechat\scmobile-persist\src\main\java\com\bingosoft\persist\mysql\dao\IBrowseRecordsMapper.java
 C:\Users\Administrator\Documents\workspace-sts-3.9.0.RELEASE\scmobile-wechat\scmobile-persist\src\main\java\com\bingosoft\persist\mysql\dao\IArticleInfoMapper.java
@@ -7,6 +8,7 @@ C:\Users\Administrator\Documents\workspace-sts-3.9.0.RELEASE\scmobile-wechat\scm
 C:\Users\Administrator\Documents\workspace-sts-3.9.0.RELEASE\scmobile-wechat\scmobile-persist\src\main\java\com\bingosoft\persist\mongodb\dao\IUserInfoRepository.java
 C:\Users\Administrator\Documents\workspace-sts-3.9.0.RELEASE\scmobile-wechat\scmobile-persist\src\main\java\com\bingosoft\persist\mycat\dao\IGoodsCollectionByPartMapper.java
 C:\Users\Administrator\Documents\workspace-sts-3.9.0.RELEASE\scmobile-wechat\scmobile-persist\src\main\java\com\bingosoft\persist\mysql\dao\IGoodsMapper.java
+C:\Users\Administrator\Documents\workspace-sts-3.9.0.RELEASE\scmobile-wechat\scmobile-persist\src\main\java\com\bingosoft\persist\mycat\dao\IBindUserByPartMapper.java
 C:\Users\Administrator\Documents\workspace-sts-3.9.0.RELEASE\scmobile-wechat\scmobile-persist\src\main\java\com\bingosoft\persist\redis\dao\impl\RedisServiceImpl.java
 C:\Users\Administrator\Documents\workspace-sts-3.9.0.RELEASE\scmobile-wechat\scmobile-persist\src\main\java\com\bingosoft\persist\mysql\dao\IGoodsCollectionMapper.java
 C:\Users\Administrator\Documents\workspace-sts-3.9.0.RELEASE\scmobile-wechat\scmobile-persist\src\main\java\com\bingosoft\persist\mongodb\dao\IWechatUserInfoRepository.java
@@ -18,3 +20,4 @@ C:\Users\Administrator\Documents\workspace-sts-3.9.0.RELEASE\scmobile-wechat\scm
 C:\Users\Administrator\Documents\workspace-sts-3.9.0.RELEASE\scmobile-wechat\scmobile-persist\src\main\java\com\bingosoft\persist\mycat\dao\IOrderMycatTestMapper.java
 C:\Users\Administrator\Documents\workspace-sts-3.9.0.RELEASE\scmobile-wechat\scmobile-persist\src\main\java\com\bingosoft\persist\mysql\dao\IAdInfoMapper.java
 C:\Users\Administrator\Documents\workspace-sts-3.9.0.RELEASE\scmobile-wechat\scmobile-persist\src\main\java\com\bingosoft\persist\mysql\dao\IOrderNewsMapper.java
+C:\Users\Administrator\Documents\workspace-sts-3.9.0.RELEASE\scmobile-wechat\scmobile-persist\src\main\java\com\bingosoft\persist\mysql\dao\GameInfoMapper.java

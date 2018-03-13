@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config
+  xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+  xmlns:jsr107='http://www.ehcache.org/v3/jsr107'
+  xmlns='http://www.ehcache.org/v3'
+  xsi:schemaLocation="
+        http://www.ehcache.org/v3 http://www.ehcache.org/schema/ehcache-core-3.1.xsd
+        http://www.ehcache.org/v3/jsr107 http://www.ehcache.org/schema/ehcache-107-ext-3.1.xsd">
+  <!-- <service>
+    <jsr107:defaults>
+      <jsr107:cache name="city" template="heap-cache"/> 
+    </jsr107:defaults>
+  </service> -->
+
+  <cache-template name="heap-cache">
+    <resources>
+      <heap unit="entries">2000</heap> 
+      <offheap unit="MB">10</offheap> 
+    </resources>
+  </cache-template>
+
+  <cache alias="city" uses-template="heap-cache">
+    <expiry>
+      <ttl unit="seconds">40</ttl>
+    </expiry>
+  </cache> 
+  <cache alias="goods_cate" uses-template="heap-cache">
+    <expiry>
+      <ttl unit="seconds">40</ttl>
+    </expiry>
+  </cache> 
+  <cache alias="goods_info" uses-template="heap-cache">
+    <expiry>
+      <ttl unit="seconds">40</ttl>
+    </expiry>
+  </cache> 
+  
+  <cache alias="goods_cate_list" uses-template="heap-cache">
+    <expiry>
+      <ttl unit="seconds">40</ttl>
+    </expiry>
+  </cache> 
+  <cache alias="hot_goods_cate" uses-template="heap-cache">
+    <expiry>
+      <ttl unit="seconds">40</ttl>
+    </expiry>
+  </cache> 
+   <cache alias="cate_id" uses-template="heap-cache">
+    <expiry>
+      <ttl unit="seconds">40</ttl>
+    </expiry>
+  </cache> 
+  
+   <cache alias="goods_sale" uses-template="heap-cache">
+    <expiry>
+      <ttl unit="seconds">10</ttl>
+    </expiry>
+  </cache> 
+  
+   <cache alias="goods_info_prod" uses-template="heap-cache">
+    <expiry>
+      <ttl unit="seconds">60</ttl>
+    </expiry>
+  </cache> 
+   <cache alias="game_rule" uses-template="heap-cache">
+    <expiry>
+      <ttl unit="seconds">60</ttl>
+    </expiry>
+  </cache> 
+  
+
+</config>

@@ -22,4 +22,5 @@ public class OrderNewListOutputDto {
 	   @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
 	   private Date expTime;
 	   private String timeTitle;
+	   private String effectiveTime;
 }

@@ -59,6 +59,7 @@ import com.bingosoft.models.dto.OrderItem;
 import com.bingosoft.models.dto.OrderItemListOutputDto;
 import com.bingosoft.models.dto.OrderNewItemOutputDto;
 import com.bingosoft.models.dto.OrderNewListOutputDto;
+import com.bingosoft.models.dto.OrderShortAddModeOutputDto;
 import com.bingosoft.models.dto.TelPhoneInputDto;
 import com.bingosoft.models.dto.TemplateData;
 import com.bingosoft.models.dto.TemplateMessageInputDto;
@@ -75,6 +76,8 @@ import com.bingosoft.models.mongodb.entities.WechatUserInfo;
 import com.bingosoft.models.msg.BaseMessage;
 import com.bingosoft.models.msg.ResponseMessage;
 import com.bingosoft.models.prefix.TemplateId;
+import com.bingosoft.models.prefix.TemplateTipsMsg;
+import com.bingosoft.models.rest.dto.GprsInfoOutputDto;
 import com.bingosoft.models.rest.dto.OBFreeQryOutDataOutputDto;
 import com.bingosoft.models.rest.dto.RealTimeFeeOutputDto;
 import com.bingosoft.models.rest.dto.RestResponseOutputDto;
@@ -97,7 +100,9 @@ import io.swagger.annotations.ApiOperation;
 @RestController
 @RequestMapping("/goods/api/v2")
 public class GoodsV2Controller {
-	private static final Logger logger = LoggerFactory.getLogger(GoodsController.class);
+	private static final Logger logger = LoggerFactory.getLogger(GoodsV2Controller.class);
+
+	private static final Logger orderLog = LoggerFactory.getLogger("order");
 
 	@Autowired
 	IWebRestService webRestService;
@@ -144,6 +149,7 @@ public class GoodsV2Controller {
 	IWebRestService webrestService;
 
 	SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日HH点mm分ss秒");
+	SimpleDateFormat sdt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
 	@ApiOperation(value = "获取商品信息", notes = "获取商品信息")
 	@RequestMapping(value = "/getGoodsInfo", method = RequestMethod.GET)
@@ -359,16 +365,19 @@ public class GoodsV2Controller {
 
 		RestResponseOutputDto<SPFeeQueryOutputDto> moneyDto = webRestService.sPFeeQuery(userDto.getPhoenNo());
 		UserBalance dto = new UserBalance();
+		dto.setPhoneNo(userDto.getPhoenNo());
 		if (moneyDto != null) {
 			if (moneyDto.getOutData() != null) {
 				double money = moneyDto.getOutData().getPREPAY_FEE() / 100.0;
 				dto.setBalence(money);
+				return new ResponseMessage<UserBalance>(200, true, "成功", dto);
 			}
+
 		} else {
 			dto.setBalence(0.00);
 		}
-		dto.setPhoneNo(userDto.getPhoenNo());
-		return new ResponseMessage<UserBalance>(200, true, "成功", dto);
+		return new ResponseMessage<UserBalance>(400, true, "未获取到", dto);
+
 	}
 
 	@ApiOperation(value = "根据商品Id获取分类Id", notes = "根据商品Id获取分类Id")
@@ -381,13 +390,13 @@ public class GoodsV2Controller {
 
 	@ApiOperation(value = "下单商品", notes = "下单商品")
 	@RequestMapping(value = "/orderGoods", method = RequestMethod.POST)
-	public BaseMessage orderGoods(HttpServletRequest request, @RequestBody OrderInputDto input) {
+	public ResponseMessage<String> orderGoods(HttpServletRequest request, @RequestBody OrderInputDto input) {
 		UserInfoDto userDto = null; // new UserInfoDto();
-
+		// String msg=TemplateTipsMsg.getTips(input.getGoodsId());
 		MessageDto dtos = validateToken(request);
 		userDto = dtos.getUserInfo();
 		if (userDto == null) {
-			return new BaseMessage(dtos.getStatus(), true, dtos.getMessage());
+			return new ResponseMessage<String>(dtos.getStatus(), true, dtos.getMessage());
 		}
 
 		int partId = Integer.valueOf(userDto.getPhoenNo().substring(userDto.getPhoenNo().length() - 1));
@@ -402,6 +411,9 @@ public class GoodsV2Controller {
 
 		List<OrderItem> items = new ArrayList<OrderItem>();
 		GoodsItemInfoAndProdOutputDto rst = goodsInfoService.getGoodsInfoAndProd(input.getGoodsId());
+		if (rst == null) {
+			return new ResponseMessage<String>(400, true, "未找到该产品");
+		}
 		OrderItem item = new OrderItem();
 		order.setPayFee(rst.getGoodsPrice());
 		order.setPayId(1);
@@ -420,9 +432,16 @@ public class GoodsV2Controller {
 		item.setGoodsName(rst.getGoodsName());
 		item.setPayFee(rst.getGoodsPrice());
 		item.setTotalAmout(1);
+
+		if (StringUtils.isEmpty(rst.getEffectiveTime()))
+			item.setEffectiveTime("");
+		else {
+			item.setEffectiveTime(rst.getEffectiveTime());
+		}
 		String prod_id = "";
 		if (rst.getFeeCode().contains("\\")) {
-			prod_id = rst.getFeeCode().split("\\")[0];
+			String[] codes = rst.getFeeCode().split("\\\\");
+			prod_id = codes[0];
 		} else {
 			prod_id = rst.getFeeCode();
 		}
@@ -431,46 +450,208 @@ public class GoodsV2Controller {
 		items.add(item);
 
 		order.setOrderItem(items);
-
+		OrderShortAddModeOutputDto orderDto = new OrderShortAddModeOutputDto();
 		// orderService.orderGoods(order);
-		int rstCode = orderService.orderGoodsInto(order);
-		if (rstCode == 1) {
-			//如果是微信才更新消息且发送模版
-			if (input.getChannelId() == 1) {
-				if (!StringUtils.isEmpty(userDto.getOpenId())) {
-					TemplateMessageInputDto template = new TemplateMessageInputDto();
-					TemplateData data = new TemplateData();
-					MessageObject first = new MessageObject();
-					MessageObject keyword1 = new MessageObject();
-					first.setValue("你好，你的流量订购成功");
-					data.setFirst(first);
-					keyword1.setValue(rst.getGoodsName());
-					MessageObject keyword2 = new MessageObject();
-					keyword2.setValue(userDto.getPhoenNo());
-					MessageObject keyword3 = new MessageObject();
-					keyword3.setValue(sdf.format(new Date()));
-					MessageObject keyword4 = new MessageObject();
-					keyword4.setValue("成功");
-					MessageObject remark = new MessageObject();
-					remark.setValue("套餐使用详情，点击查询！");
-					data.setKeyword1(keyword1);
-					data.setKeyword2(keyword2);
-					data.setKeyword3(keyword3);
-					data.setKeyword4(keyword4);
-					data.setRemark(remark);
-					template.setData(data);
-					template.setTouser(userDto.getOpenId());
-					template.setUrl("http://wx.10086.cn/sichuan/wxzq/llzq/index.html");
-					logger.info("send template message openId:" + userDto.getOpenId());
-					System.out.println(userDto.getOpenId());
-					// template.setTouser("ovCZJuPE45DnZGGrFPKzIkGws3xE");
-					template.setTemplate_id(TemplateId.OP_SUCCESS);
-					opService.templateMessage(template);
+		String postTime = sdt.format(new Date());
+		try {
+			orderDto = orderService.orderGoodsInto(order);
+			if (orderDto.getRstCode() == 1) {
+				// 如果是微信才更新消息且发送模版
+				if (input.getChannelId() == 1) {
+					if (!StringUtils.isEmpty(userDto.getOpenId())) {
+						TemplateMessageInputDto template = new TemplateMessageInputDto();
+						TemplateData data = new TemplateData();
+						MessageObject first = new MessageObject();
+						MessageObject keyword1 = new MessageObject();
+						// String tips_msg = TemplateTipsMsg.getTips(input.getGoodsId());
+						String tips_msg = rst.getTags();
+						if (StringUtils.isEmpty(tips_msg)) {
+							tips_msg = TemplateTipsMsg.getTips(input.getGoodsId());
+							if (StringUtils.isEmpty(tips_msg)) {
+								tips_msg = "你好，你的流量订购成功,业务将在" + orderDto.getEffDate() + "生效";
+							}
+						}
+
+						// first.setValue("你好，你的流量订购成功,业务将在" + orderDto.getEffDate() + "生效");
+						first.setValue(tips_msg);
+						data.setFirst(first);
+						keyword1.setValue(rst.getGoodsName());
+						MessageObject keyword2 = new MessageObject();
+						keyword2.setValue(userDto.getPhoenNo());
+						MessageObject keyword3 = new MessageObject();
+						keyword3.setValue(sdf.format(new Date()));
+						MessageObject keyword4 = new MessageObject();
+						keyword4.setValue(
+								String.format("成功,你是第%s名办理用户,订购序号：%s", orderDto.getSeqIndex(), orderDto.getSeqIndex()));
+						MessageObject remark = new MessageObject();
+						remark.setValue("点击详情，了解更多！");
+						data.setKeyword1(keyword1);
+						data.setKeyword2(keyword2);
+						data.setKeyword3(keyword3);
+						data.setKeyword4(keyword4);
+						data.setRemark(remark);
+						template.setData(data);
+						template.setTouser(userDto.getOpenId());
+						template.setUrl("http://wx.10086.cn/sichuan/wxzq/llzq/index.html");
+						logger.info("send template message openId:" + userDto.getOpenId());
+						// System.out.println(userDto.getOpenId());
+						// template.setTouser("ovCZJuPE45DnZGGrFPKzIkGws3xE");
+						template.setTemplate_id(TemplateId.OP_SUCCESS);
+						opService.templateMessage(template);
+					}
+					orderNewsService.addOrderNews(userDto.getPhoenNo(), getPartId(userDto.getPhoenNo()));
 				}
-				orderNewsService.addOrderNews(userDto.getPhoenNo(), getPartId(userDto.getPhoenNo()));
+				String url = orderDto.getLinkUrl();
+				if (!StringUtils.isEmpty(url)) {
+					url += "?orderId=" + order.getOrderId();
+				}
+				return new ResponseMessage<String>(200, true, "成功", url);
+			} else {
+				return new ResponseMessage<String>(400, true, "订购失败");
 			}
-			return new BaseMessage(200, true, "成功");
+		} catch (Exception e) {
+			logger.error("goodsController:" + e.getMessage() + e.getStackTrace());
+			logger.error(JSONUtils.toJson(order));
+			logger.error(JSONUtils.toJson(orderDto));
+			orderLog.info(JSONUtils.toJson(order));
+			try {
+				orderService.timeoutOrder(order, postTime, sdt.format(new Date()));
+			} catch (Exception ex) {
+				logger.error("timeoutOrder:" + ex.getMessage() + ex.getStackTrace());
+			}
+			return new ResponseMessage<String>(400, true, "订购失败");
+		}
+	}
+
+	@ApiOperation(value = "营销活动办理", notes = "营销活动办理")
+	@RequestMapping(value = "/MarkActHandle", method = RequestMethod.POST)
+	public BaseMessage MarkActHandle(HttpServletRequest request, @RequestBody OrderInputDto input) {
+		UserInfoDto userDto = null; // new UserInfoDto();
+		// String msg=TemplateTipsMsg.getTips(input.getGoodsId());
+		MessageDto dtos = validateToken(request);
+		userDto = dtos.getUserInfo();
+		if (userDto == null) {
+			return new BaseMessage(dtos.getStatus(), true, dtos.getMessage());
+		}
+
+		int partId = Integer.valueOf(userDto.getPhoenNo().substring(userDto.getPhoenNo().length() - 1));
+		OrderInfo order = new OrderInfo();
+		order.setOrderId(Long.parseLong(IdGenerator.INSTANCE.nextId()));
+		order.setChannelId(input.getChannelId());
+		order.setUserId(userDto.getUserId());
+		order.setUserName(userDto.getUserName());
+		order.setPhoneNo(userDto.getPhoenNo());
+		order.setPartId(partId);
+		order.setOrderStatus(1);
+
+		List<OrderItem> items = new ArrayList<OrderItem>();
+		GoodsItemInfoAndProdOutputDto rst = goodsInfoService.getGoodsInfoAndProd(input.getGoodsId());
+		if (rst == null) {
+			return new BaseMessage(400, true, "未找到该产品");
+		}
+		OrderItem item = new OrderItem();
+		order.setPayFee(rst.getGoodsPrice());
+		order.setPayId(1);
+		order.setPayNote("fhdk");
+		item.setCategoryId(rst.getCategoryId());
+		item.setGoodsCount(1);
+		item.setGoodsDesc(rst.getGoodsDesc());
+		item.setGoodsId(input.getGoodsId());
+		item.setOrderId(order.getOrderId());
+		item.setPartId(partId);
+		item.setCreateTime(new Date());
+		item.setGoodsImage(rst.getGoodsImage());
+		item.setGoodsPrice(rst.getGoodsPrice());
+		item.setOrderStatus(1);
+		item.setPartId(partId);
+		item.setGoodsName(rst.getGoodsName());
+		item.setPayFee(rst.getGoodsPrice());
+		item.setTotalAmout(1);
+
+		if (StringUtils.isEmpty(rst.getEffectiveTime()))
+			item.setEffectiveTime("");
+		else {
+			item.setEffectiveTime(rst.getEffectiveTime());
+		}
+		String prod_id = "";
+		if (rst.getFeeCode().contains("\\")) {
+			String[] codes = rst.getFeeCode().split("\\\\");
+			prod_id = codes[0];
 		} else {
+			prod_id = rst.getFeeCode();
+		}
+		item.setPROD_PRCID(prod_id);
+		item.setItemId(Long.parseLong(IdGenerator.INSTANCE.nextId()));
+		items.add(item);
+
+		order.setOrderItem(items);
+		OrderShortAddModeOutputDto orderDto = new OrderShortAddModeOutputDto();
+		// orderService.orderGoods(order);
+		String postTime = sdt.format(new Date());
+		try {
+			orderDto = orderService.MarkActHandleInto(order);
+			if (orderDto.getRstCode() == 1) {
+				// 如果是微信才更新消息且发送模版
+				if (input.getChannelId() == 1) {
+					if (!StringUtils.isEmpty(userDto.getOpenId())) {
+						TemplateMessageInputDto template = new TemplateMessageInputDto();
+						TemplateData data = new TemplateData();
+						MessageObject first = new MessageObject();
+						MessageObject keyword1 = new MessageObject();
+						// String tips_msg = TemplateTipsMsg.getTips(input.getGoodsId());
+						String tips_msg = rst.getTags();
+						if (StringUtils.isEmpty(tips_msg)) {
+							tips_msg = TemplateTipsMsg.getTips(input.getGoodsId());
+							if (StringUtils.isEmpty(tips_msg)) {
+								tips_msg = "你好，你的流量订购成功,业务将在" + orderDto.getEffDate() + "生效";
+							}
+						}
+
+						// first.setValue("你好，你的流量订购成功,业务将在" + orderDto.getEffDate() + "生效");
+						first.setValue(tips_msg);
+						data.setFirst(first);
+						keyword1.setValue(rst.getGoodsName());
+						MessageObject keyword2 = new MessageObject();
+						keyword2.setValue(userDto.getPhoenNo());
+						MessageObject keyword3 = new MessageObject();
+						keyword3.setValue(sdf.format(new Date()));
+						MessageObject keyword4 = new MessageObject();
+						// keyword4.setValue(
+						// String.format("成功,你是第%s名办理用户,订购序号：%s", orderDto.getSeqIndex(),
+						// orderDto.getSeqIndex()));
+						keyword4.setValue(String.format("成功,你是第%s名办理用户", orderDto.getSeqIndex()));
+						MessageObject remark = new MessageObject();
+						remark.setValue("点击详情，了解更多！");
+						data.setKeyword1(keyword1);
+						data.setKeyword2(keyword2);
+						data.setKeyword3(keyword3);
+						data.setKeyword4(keyword4);
+						data.setRemark(remark);
+						template.setData(data);
+						template.setTouser(userDto.getOpenId());
+						template.setUrl("http://wx.10086.cn/sichuan/wxzq/llzq/index.html");
+						logger.info("send template message openId:" + userDto.getOpenId());
+						// System.out.println(userDto.getOpenId());
+						// template.setTouser("ovCZJuPE45DnZGGrFPKzIkGws3xE");
+						template.setTemplate_id(TemplateId.OP_SUCCESS);
+						opService.templateMessage(template);
+					}
+					orderNewsService.addOrderNews(userDto.getPhoenNo(), getPartId(userDto.getPhoenNo()));
+				}
+				return new BaseMessage(200, true, "成功");
+			} else {
+				return new BaseMessage(400, true, "订购失败");
+			}
+		} catch (Exception e) {
+			logger.error("goodsController:" + e.getMessage() + e.getStackTrace());
+			logger.error(JSONUtils.toJson(order));
+			logger.error(JSONUtils.toJson(orderDto));
+			orderLog.info(JSONUtils.toJson(order));
+			try {
+				orderService.timeoutOrder(order, postTime, sdt.format(new Date()));
+			} catch (Exception ex) {
+				logger.error("timeoutOrder:" + ex.getMessage() + ex.getStackTrace());
+			}
 			return new BaseMessage(400, true, "订购失败");
 		}
 	}
@@ -584,6 +765,37 @@ public class GoodsV2Controller {
 		try {
 			String key = String.format(UrlParams.cmcc, userDto.getPhoenNo());
 			return new BaseMessage(200, true, config.getCmccUrl() + CmccDesUtils.encode(key));
+			// return new BaseMessage(200, true,
+			// "http://wx.10086.cn/website/customerService");
+		} catch (Exception ex) {
+			throw new WechatException(ex.getMessage());
+		}
+	}
+
+	@ApiOperation(value = "订单补偿", notes = "订单补偿")
+	@RequestMapping(value = "/tccOrder", method = RequestMethod.POST)
+	public BaseMessage tccOrder(HttpServletRequest request, String param) throws WechatException {
+		// UserInfoDto userDto = null; // new UserInfoDto();
+		// MessageDto dtos = validateToken(request);
+		// userDto = dtos.getUserInfo();
+		// if (userDto == null) {
+		// return new BaseMessage(dtos.getStatus(), true, dtos.getMessage());
+		// }
+		if (StringUtils.isEmpty(param))
+			return null;
+
+		try {
+			OrderInfo info = JSONUtils.toBean(param, OrderInfo.class);
+			// String key = String.format(UrlParams.cmcc, userDto.getPhoenNo());
+			// return new BaseMessage(200, true, config.getCmccUrl() +
+			// CmccDesUtils.encode(key));
+			if (info != null) {
+				orderService.TccFailOrder(info);
+				return new BaseMessage(200, true, "");
+			}
+			return new BaseMessage(400, true, "什么都没有");
+			// return new BaseMessage(200, true,
+			// "http://wx.10086.cn/website/customerService");
 		} catch (Exception ex) {
 			throw new WechatException(ex.getMessage());
 		}
@@ -603,12 +815,21 @@ public class GoodsV2Controller {
 			return new ResponseMessage<UserFlowInfoOutputDto>(dtos.getStatus(), true, dtos.getMessage());
 		}
 		RestResponseOutputDto<OBFreeQryOutDataOutputDto> flowDto = webRestService.sOBFreeQry(userDto.getPhoenNo());
-		double flow = 0.0, useFlow = 0.0;
+		double flow = 0.0, useFlow = 0.0, snUsedFlow = 0.0, gnUsedFlow = 0.0, gnTotalFlow = 0.0, snTotalFlow = 0.0;
 		if (flowDto.getOutData() != null) {
 			OBFreeQryOutDataOutputDto freeDtos = flowDto.getOutData();
+			GprsInfoOutputDto itemDto = null;
 			for (int index = 0; index <= freeDtos.getGPRS_INFO().size() - 1; index++) {
-				flow += freeDtos.getGPRS_INFO().get(index).getSUM();
-				useFlow += freeDtos.getGPRS_INFO().get(index).getUSED();
+				itemDto = freeDtos.getGPRS_INFO().get(index);
+				flow += itemDto.getSUM();
+				useFlow += itemDto.getUSED();
+				if (itemDto.getNAME().contains("国内")) {
+					gnUsedFlow += itemDto.getUSED();
+					gnTotalFlow += itemDto.getSUM();
+				} else {
+					snUsedFlow += itemDto.getUSED();
+					snTotalFlow += itemDto.getSUM();
+				}
 			}
 		}
 		UserFlowInfoOutputDto dto = new UserFlowInfoOutputDto();
@@ -619,6 +840,10 @@ public class GoodsV2Controller {
 			dto.setFlowPercent((flow - useFlow) / flow);
 		}
 		dto.setUseFlow(useFlow);
+		dto.setGnUsedFlow(gnUsedFlow);
+		dto.setSnUsedFlow(snUsedFlow);
+		dto.setSnTotalFlow(snTotalFlow);
+		dto.setGnTotalFlow(gnTotalFlow);
 		dto.setHeadImage(userDto.getHeadImg());
 
 		RestResponseOutputDto<SPFeeQueryOutputDto> moneyDto = webRestService.sPFeeQuery(userDto.getPhoenNo());
@@ -626,7 +851,9 @@ public class GoodsV2Controller {
 		if (moneyDto != null) {
 			if (moneyDto.getOutData() != null) {
 				double money = moneyDto.getOutData().getPREPAY_FEE() / 100.0;
+				double un_bill = moneyDto.getOutData().getUNBILL_FEE() / 100.0;
 				dto.setMoney(money);
+				dto.setUn_bill_fee(un_bill);
 			}
 		} else {
 			dto.setMoney(0.00);
@@ -688,34 +915,40 @@ public class GoodsV2Controller {
 		// userDto = userInfoService.getUser(token);
 
 		try {
-			// UserPhone phone = userPhone.findByPhoneNo(input.getTelNum());
-			// if (phone == null)
-			// return new ResponseMessage<BindUserInfoOutputDto>(201, false,
-			// "抱歉没有获取到号码相关信息，请联系在线客服", null);
-			// else {
-			UserInfoDto user = new UserInfoDto();
-			user.setHeadImg("");
-			// user.setOpenId(input.getTelNum());
-			user.setUserName(input.getTelNum().replaceAll("(\\d{3})\\d{4}(\\w{4})", "$1****$2"));
-			user.setPhoenNo(input.getTelNum());
-			user.setUserId(input.getTelNum());
+			UserPhone phone = userPhone.findByPhoneNo(input.getTelNum());
+			if (phone == null)
+				return new ResponseMessage<BindUserInfoOutputDto>(201, false, "抱歉没有获取到号码相关信息，请联系在线客服", null);
+			else {
+				UserInfoDto user = new UserInfoDto();
+				user.setHeadImg("");
+				// user.setOpenId(input.getTelNum());
+				user.setUserName(input.getTelNum().replaceAll("(\\d{3})\\d{4}(\\w{4})", "$1****$2"));
+				user.setPhoenNo(input.getTelNum());
+				user.setUserId(input.getTelNum());
 
-			String desOpenId = TokenUtils.encrypt(JSONUtils.toJson(user));// CryptoUtils.encodeSHA(user.getOpenId());
-			String shareId = ShareDesUtils.encode(user.getOpenId());
-			// 目前取微信生成的token作为用户缓存的key
-			BindUserInfoOutputDto dto = new BindUserInfoOutputDto();
-			dto.setShare(shareId);
-			dto.setToken(desOpenId);
-			// userCacheService.setUser(desOpenId, user);
-			WechatUserInfo wechat = new WechatUserInfo();
-			wechat.setHeadImg(user.getHeadImg());
-			wechat.setOpenId(user.getOpenId());
-			wechat.setPhoenNo(user.getPhoenNo());
-			wechat.setUserId(user.getUserId());
-			wechat.setUserName(user.getUserName());
-			wechatUserInfo.save(wechat);
-			return new ResponseMessage<BindUserInfoOutputDto>(200, true, "成功", dto);
-			// }
+				String desOpenId = TokenUtils.encrypt(JSONUtils.toJson(user));// CryptoUtils.encodeSHA(user.getOpenId());
+				// String shareId = ShareDesUtils.encode(user.getOpenId());
+				String shareId = "";
+				try {
+					shareId = TokenUtils.encrypt(user.getPhoenNo());
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				// 目前取微信生成的token作为用户缓存的key
+				BindUserInfoOutputDto dto = new BindUserInfoOutputDto();
+				dto.setShare(shareId);
+				dto.setToken(desOpenId);
+				// userCacheService.setUser(desOpenId, user);
+				WechatUserInfo wechat = new WechatUserInfo();
+				wechat.setHeadImg(user.getHeadImg());
+				wechat.setOpenId(user.getOpenId());
+				wechat.setPhoenNo(user.getPhoenNo());
+				wechat.setUserId(user.getUserId());
+				wechat.setUserName(user.getUserName());
+				wechatUserInfo.save(wechat);
+				return new ResponseMessage<BindUserInfoOutputDto>(200, true, "成功", dto);
+			}
 		} catch (Exception ex) {
 			throw new WechatException(ex.getMessage());
 		}

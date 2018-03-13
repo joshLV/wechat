@@ -51,4 +51,22 @@
         <appender-ref ref="ERROR_FILE" />
     </root>
     
+    <appender name="MONGODB" class="com.bingosoft.web.filter.MongoDBAppender">
+        <DbHost>120.197.17.151</DbHost>
+        <DbPort>22001</DbPort>
+        <DbName>llcs_log</DbName>
+        <DbCollectionName>log</DbCollectionName>
+    </appender>
+    
+     <appender name="order" class="com.bingosoft.web.filter.MongoDBAppender">
+        <DbHost>120.197.17.151</DbHost>
+        <DbPort>20210</DbPort>
+        <DbName>order</DbName>
+        <DbCollectionName>log</DbCollectionName>
+    </appender>
+
+    <logger name="order" level="INFO">
+        <appender-ref ref="order"/>
+    </logger>  
+    
 </configuration>

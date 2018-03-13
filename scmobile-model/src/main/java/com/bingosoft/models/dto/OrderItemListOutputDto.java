@@ -25,4 +25,5 @@ public class OrderItemListOutputDto {
    private Date expTime;
    private int totalAmount;
    private String prodStatus;
+   private String effectiveTime;
 }

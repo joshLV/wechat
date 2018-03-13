@@ -28,5 +28,7 @@ public class UserInfoDto implements Serializable {
 	private String userName = "wmymtx";
 
 	private Date time;
+	
+	private String subscribeTime;
 
 }

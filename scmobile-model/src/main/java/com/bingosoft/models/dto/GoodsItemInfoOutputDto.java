@@ -1,9 +1,11 @@
 package com.bingosoft.models.dto;
 
+import java.io.Serializable;
+
 import lombok.Data;
 
 @Data
-public class GoodsItemInfoOutputDto {
+public class GoodsItemInfoOutputDto implements Serializable{
   private int categoryId;
   private String goodsName;
   private String goodsTitle;

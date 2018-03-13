@@ -1,4 +1,4 @@
-2017-11-15 11:21:06.608 [main] ERROR o.s.b.d.LoggingFailureAnalysisReporter -
+2018-02-07 10:23:40.689 [main] ERROR o.s.b.d.LoggingFailureAnalysisReporter -
 
 ***************************
 APPLICATION FAILED TO START
@@ -6,26 +6,9 @@ APPLICATION FAILED TO START
 
 Description:
 
-Field orderNewsService in com.bingosoft.web.controller.GoodsController required a bean of type 'com.bingosoft.core.mysql.service.IOrderNewsService' that could not be found.
-
-
-Action:
-
-Consider defining a bean of type 'com.bingosoft.core.mysql.service.IOrderNewsService' in your configuration.
-
-2017-11-15 11:24:54.891 [main] ERROR o.s.b.d.LoggingFailureAnalysisReporter -
-
-***************************
-APPLICATION FAILED TO START
-***************************
-
-Description:
-
-Field orderNewsService in com.bingosoft.web.controller.GoodsController required a bean of type 'com.bingosoft.core.mysql.service.IOrderNewsService' that could not be found.
-
+Embedded servlet container failed to start. Port 9876 was already in use.
 
 Action:
 
-Consider defining a bean of type 'com.bingosoft.core.mysql.service.IOrderNewsService' in your configuration.
+Identify and stop the process that's listening on port 9876 or configure this application to listen on another port.
 
-2017-11-15 15:06:29.733 [http-nio-9876-exec-1] ERROR c.b.c.m.s.impl.OrderServiceImpl -null[Ljava.lang.StackTraceElement;@b97acbd

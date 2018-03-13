@@ -13,6 +13,7 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -34,9 +35,14 @@ public class WebLogAspect {
 	@Autowired
 	IWebLogService webLogService;
 	
+	ThreadLocal<Long> startTime = new ThreadLocal<>();
+	
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    @Pointcut("execution(public * com.bingosoft.web.controller.GoodsController.*(..))")
+    private static final Logger mongoLog = LoggerFactory.getLogger("MONGODB");
+    
+    
+    @Pointcut("execution(public * com.bingosoft.web.controller.GoodsV2Controller.*(..))")
 
     public void webLog() {
     }
@@ -46,8 +52,8 @@ public class WebLogAspect {
     public void doBefore(JoinPoint joinPoint) {
 
         // 接收到请求，记录请求内容
-
-        logger.info("WebLogAspect.doBefore()");
+    	startTime.set(System.currentTimeMillis());
+        //logger.info("WebLogAspect.doBefore()");
 
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
 
@@ -56,19 +62,20 @@ public class WebLogAspect {
 
         // 记录下请求内容
 
-        logger.info("URL : " + request.getRequestURL().toString());
-
-        logger.info("HTTP_METHOD : " + request.getMethod());
-
-        logger.info("IP : " + request.getRemoteAddr());
-
-        logger.info("CLASS_METHOD : " + joinPoint.getSignature().getDeclaringTypeName() + "." + joinPoint.getSignature
-                ().getName());
-
-        logger.info("ARGS : " + Arrays.toString(joinPoint.getArgs()));
+//        logger.info("URL : " + request.getRequestURL().toString());
+//
+//        logger.info("HTTP_METHOD : " + request.getMethod());
+//
+//        logger.info("IP : " + request.getRemoteAddr());
+//
+//        logger.info("CLASS_METHOD : " + joinPoint.getSignature().getDeclaringTypeName() + "." + joinPoint.getSignature
+//                ().getName());
+//
+//        logger.info("ARGS : " + Arrays.toString(joinPoint.getArgs()));
         WebLog log=new WebLog();
         log.setViewIp(request.getRemoteAddr());
         log.setUrl(request.getRequestURL().toString());
+        logger.info(request.getRequestURL().toString());
         log.setArgs(Arrays.toString(joinPoint.getArgs()));
         UserInfoDto userDto = null;
 		String token = request.getHeader("os");
@@ -89,8 +96,11 @@ public class WebLogAspect {
 
 			}
 		}
+		writeLogs(log);
         //获取所有参数方法一：
-        webLogService.writeWebLog(log);
+        //webLogService.writeWebLog(log);
+       // mongoLog.info(JSONUtils.toJson(log));
+       
        // Enumeration<String> enu = request.getParameterNames();
 
 //        while (enu.hasMoreElements()) {
@@ -104,8 +114,17 @@ public class WebLogAspect {
 
     @AfterReturning("webLog()")
     public void doAfterReturning(JoinPoint joinPoint) {
+    	logger.info("RESPONSE : " + joinPoint.toString());
+		logger.info("SPEND TIME : " + (System.currentTimeMillis() - startTime.get()));
         // 处理完请求，返回内容
-        logger.info("WebLogAspect.doAfterReturning()");
+       // logger.info("WebLogAspect.doAfterReturning()");
 
+    }
+    
+    @Async
+    private void writeLogs(WebLog log)
+    {
+    	webLogService.writeWebLog(log);
+        // mongoLog.info(JSONUtils.toJson(log));
     }
 }

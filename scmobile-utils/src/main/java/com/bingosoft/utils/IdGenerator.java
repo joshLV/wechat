@@ -19,7 +19,7 @@ public enum IdGenerator {
     private long datacenterId = 0L; //可配置在properties中,启动时加载,此处默认先写成0
     private long sequence = 0L;
     //private long workerIdBits = 8L; //节点ID长度
-    private long workerIdBits = 2L; //节点ID长度
+    private long workerIdBits = 3L; //节点ID长度
     private long datacenterIdBits = 2L; //数据中心ID长度,可根据时间情况设定位数
     //private long sequenceBits = 12L; //序列号12位
     private long sequenceBits = 3L; //序列号12位
