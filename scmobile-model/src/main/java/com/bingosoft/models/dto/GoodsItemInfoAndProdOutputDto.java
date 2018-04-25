@@ -17,4 +17,6 @@ public class GoodsItemInfoAndProdOutputDto implements  Serializable{
 	  private String feeCode;
 	  private String effectiveTime;
 	  private String tags;
+	  private String cateName;
+	  private String cateImg;
 }

@@ -1,0 +1,9 @@
+2018-04-18 16:00:51.328 [XNIO-2 task-1] ERROR c.b.w.e.GlobalExceptionHandler -null[Ljava.lang.StackTraceElement;@1e4542f6
+2018-04-18 17:41:57.809 [XNIO-2 task-1] ERROR c.b.w.e.GlobalExceptionHandler -Request method 'GET' not supported[Ljava.lang.StackTraceElement;@39d9bae0
+2018-04-18 17:43:13.749 [XNIO-2 task-2] ERROR c.b.web.controller.GoodsV2Controller -goodsController:null[Ljava.lang.StackTraceElement;@e78766f
+2018-04-18 17:43:13.751 [XNIO-2 task-2] ERROR c.b.web.controller.GoodsV2Controller -{"orderId":1804181742136381424,"userId":"13908082769","userName":"與夢同荇","phoneNo":"13548074395","totalAmout":0,"payId":1,"payFee":1.0,"payNote":"fhdk","orderStatus":1,"channelId":1,"partId":5,"orderItem":[{"itemId":1804181742166231424,"PROD_PRCID":"ACAZ26285","orderId":1804181742136381424,"partId":5,"goodsId":10000,"goodsName":"100M1小时999","goodsImage":"images/img-package01.png","goodsCount":1,"goodsPrice":1.0,"goodsDesc":"\u003cp\u003e1元包含100M省内流量，5分钟后生效，1小时有效，当月可多次订购，更多介绍见业务详情。\u003c/p\u003e\n","totalAmout":1.0,"payFee":1.0,"orderStatus":1,"createTime":"Apr 18, 2018 5:42:16 PM","categoryId":1009,"effectiveTime":"5分钟后生效","cateName":"小时/日加油包","cateImg":"images/pic5.png"}]}
+2018-04-18 17:43:13.837 [XNIO-2 task-2] ERROR c.b.web.controller.GoodsV2Controller -{"rstCode":0,"isUp":false}
+2018-04-18 18:09:54.920 [XNIO-2 task-1] ERROR c.b.w.e.GlobalExceptionHandler -Index: 0, Size: 0[Ljava.lang.StackTraceElement;@4ceb73ce
+2018-04-18 18:13:08.114 [XNIO-2 task-2] ERROR c.b.w.e.GlobalExceptionHandler -Index: 0, Size: 0[Ljava.lang.StackTraceElement;@5e3c1ca0
+2018-04-18 18:14:52.621 [XNIO-2 task-3] ERROR c.b.w.e.GlobalExceptionHandler -Index: 0, Size: 0[Ljava.lang.StackTraceElement;@2ed403cc
+2018-04-18 18:15:15.177 [XNIO-2 task-4] ERROR c.b.w.e.GlobalExceptionHandler -Index: 0, Size: 0[Ljava.lang.StackTraceElement;@3634d1b0

@@ -14,7 +14,7 @@ public class OrderNewListOutputDto {
 	   private double goodsPrice;
 	   private double payFee;
 	   private int orderStatus;
-	   @JsonFormat(pattern = "MM月dd日",timezone="GMT+8")
+	   @JsonFormat(pattern = "MM-dd HH:mm",timezone="GMT+8")
 	   private Date createTime;
 	   private int totalAmount;
 	   @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
@@ -23,4 +23,5 @@ public class OrderNewListOutputDto {
 	   private Date expTime;
 	   private String timeTitle;
 	   private String effectiveTime;
+	   private String orderId;
 }

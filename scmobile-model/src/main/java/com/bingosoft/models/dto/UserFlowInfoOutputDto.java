@@ -22,4 +22,8 @@ public class UserFlowInfoOutputDto {
 	// 国内总流量
 	private double gnTotalFlow;
 	private double flowPercent;
+	private String nickName;
+	
+	private String gradeName;
+	private	String gradeImg;
 }

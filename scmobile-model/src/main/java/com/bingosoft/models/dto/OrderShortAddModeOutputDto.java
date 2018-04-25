@@ -8,4 +8,8 @@ public class OrderShortAddModeOutputDto {
  private String effDate;
  private String seqIndex;
  private String linkUrl;
+ private String retMsg;
+ private boolean isUp;
+ private String gradeName;
+ private String gradeImg;
 }

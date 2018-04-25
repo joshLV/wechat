@@ -79,5 +79,29 @@ public class RedisKeyPrefix {
    
    public static final String Order_Game_Share_Prefix="game:share:%s:%s";
    
+   /**
+    * 分类
+    */
+   public static final String Goods_Pack_Prefix="goods:pack:cate:%s";
+   
+   /**
+    * 单品详情
+    */
+   public static final String Goods_Detail_Prefix="goods:detail:%s";
+   
+   public static final String Hot_Goods_Prefix="hot:goods";
+   
+   public static final String Sms_Prefix="sms:%s";
+   
+   /**
+    * 用户等级信息
+    */
+   public static final String User_Basic_Prefix="user:basic:%s";
+   
+   /**
+    * 缓存等级基础信息
+    */
+   public static final String User_Grade_Prefix="user:grade";
+   
    
 }

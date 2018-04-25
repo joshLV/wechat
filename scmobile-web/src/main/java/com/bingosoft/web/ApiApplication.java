@@ -1,15 +1,15 @@
 package com.bingosoft.web;
 
-import java.util.concurrent.TimeUnit;
+
 
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Bean;
+
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
-import okhttp3.OkHttpClient;
+
 
 //@ComponentScan(basePackageClasses=)
 
@@ -24,15 +24,15 @@ public class ApiApplication {
 		SpringApplication.run(ApiApplication.class, args);
 	}
 	
-	@Bean
-    public OkHttpClient okHttpClient() {
-        OkHttpClient.Builder builder = new OkHttpClient.Builder();
-            builder.connectTimeout(30, TimeUnit.SECONDS)
-                    .readTimeout(30, TimeUnit.SECONDS)
-                    .writeTimeout(30,TimeUnit.SECONDS)
-                    .retryOnConnectionFailure(true);
-        return builder.build();
-    }
+//	@Bean
+//    public OkHttpClient okHttpClient() {
+//        OkHttpClient.Builder builder = new OkHttpClient.Builder();
+//            builder.connectTimeout(30, TimeUnit.SECONDS)
+//                    .readTimeout(30, TimeUnit.SECONDS)
+//                    .writeTimeout(30,TimeUnit.SECONDS)
+//                    .retryOnConnectionFailure(true);
+//        return builder.build();
+//    }
 
 
 }

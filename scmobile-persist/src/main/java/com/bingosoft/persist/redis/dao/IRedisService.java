@@ -31,4 +31,6 @@ public interface IRedisService {
 	public List<String> lrange(String key,int index ,int count);
 	
 	public String evalScript(String script,int keysCount,String[] params);
+	
+	public boolean del(final String key) ;
 }

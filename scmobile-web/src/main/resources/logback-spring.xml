@@ -60,7 +60,7 @@
     
      <appender name="order" class="com.bingosoft.web.filter.MongoDBAppender">
         <DbHost>120.197.17.151</DbHost>
-        <DbPort>20210</DbPort>
+        <DbPort>22001</DbPort>
         <DbName>order</DbName>
         <DbCollectionName>log</DbCollectionName>
     </appender>

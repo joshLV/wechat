@@ -15,10 +15,13 @@ com\bingosoft\persist\mycat\dao\IBrowseRecordsByPartMapper.class
 com\bingosoft\persist\mycat\dao\IBindUserByPartMapper.class
 com\bingosoft\persist\mysql\dao\IAdInfoMapper.class
 com\bingosoft\persist\mysql\dao\IArticleInfoMapper.class
+com\bingosoft\persist\mycat\dao\IUserBasicByPartMapper.class
 com\bingosoft\persist\redis\dao\impl\RedisServiceImpl$1.class
 com\bingosoft\persist\mycat\dao\IOrderNewsByPartMapper.class
 com\bingosoft\persist\redis\dao\impl\RedisServiceImpl$6.class
+com\bingosoft\persist\redis\dao\impl\RedisServiceImpl$10.class
 com\bingosoft\persist\mysql\dao\IGoodsCollectionMapper.class
+com\bingosoft\persist\mysql\dao\IUserGradeMapper.class
 com\bingosoft\persist\redis\dao\impl\RedisServiceImpl$4.class
 com\bingosoft\persist\mysql\dao\IGoodsInfoMapper.class
 com\bingosoft\persist\redis\dao\impl\RedisServiceImpl$8.class

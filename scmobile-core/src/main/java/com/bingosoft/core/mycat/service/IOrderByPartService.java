@@ -20,9 +20,15 @@ public interface IOrderByPartService {
 	
 	public OrderShortAddModeOutputDto MarkActHandleInto(OrderInfo order);
 	
+	public OrderShortAddModeOutputDto MarkActHandleIntoSame(OrderInfo order);
+	
 	public void TccFailOrder(OrderInfo order);
 	
 	public void timeoutOrder(OrderInfo order,String postTime,String timeoutTime);
 	
 	public List<OrderItemListOutputDto> getOrderItemList(String userId, int pageIndex, int pageSize,int partId);
+	
+	public String orderLimit(String phone, int partId, double price);
+	
+	public OrderShortAddModeOutputDto orderCsfGoodsInto(OrderInfo orderInfo, String smsCode);
 }

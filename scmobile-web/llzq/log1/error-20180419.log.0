@@ -1,0 +1,9 @@
+2018-04-19 15:54:11.135 [XNIO-2 task-1] ERROR c.b.w.e.GlobalExceptionHandler -Optional double parameter 'price' is present but cannot be translated into a null value due to being declared as a primitive type. Consider declaring it as object wrapper for the corresponding primitive type.[Ljava.lang.StackTraceElement;@3af00610
+2018-04-19 15:55:00.337 [XNIO-2 task-3] ERROR c.b.w.e.GlobalExceptionHandler -
+### Error updating database.  Cause: com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException: Duplicate entry '13548074395' for key 'PRIMARY'
+### The error may involve com.bingosoft.persist.mycat.dao.IUserBasicByPartMapper.addUserBasic-Inline
+### The error occurred while setting parameters
+### SQL: insert into user_basic(phone_no,grade_id,grade_name,grade_image,part_id) VALUES(?,?,?,?,?)
+### Cause: com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException: Duplicate entry '13548074395' for key 'PRIMARY'
+; SQL []; Duplicate entry '13548074395' for key 'PRIMARY'; nested exception is com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException: Duplicate entry '13548074395' for key 'PRIMARY'[Ljava.lang.StackTraceElement;@1f95a671
+2018-04-19 16:31:50.871 [XNIO-2 task-9] ERROR c.b.w.e.GlobalExceptionHandler -Timeout while receiving message; nested exception is com.mongodb.MongoSocketReadTimeoutException: Timeout while receiving message[Ljava.lang.StackTraceElement;@60fe725d

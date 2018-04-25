@@ -6,7 +6,9 @@ import lombok.Data;
 public class UserInfoOutputDto {
 	private String userName;
 	private String headImg;
-	private String phoenNo;
+	private String phoneNo;
 	private int colCount;
 	private int browseCount;
+	private String gradeName;
+	private String gradeImg;
 }

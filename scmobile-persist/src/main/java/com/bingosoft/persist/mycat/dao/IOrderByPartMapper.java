@@ -25,14 +25,14 @@ public interface IOrderByPartMapper {
 	@Select("SELECT item.order_id as orderId,item.item_id as itemId,item.goods_image as goodsImage,item.goods_count as goodsCount,\r\n"
 			+ "item.goods_id as goodsId,item.goods_name as goodsName,item.goods_price as goodsPrice,item.order_status as orderStatus,\r\n"
 			+ "item.pay_fee as payFee,item.total_amount as totalAmount,item.create_time as createTime,item.eff_time as effTime,item.exp_time as expTime,case   WHEN  eff_time>CURRENT_TIME() THEN '未生效'  WHEN exp_time>=CURRENT_TIME() and eff_time<=CURRENT_TIME() THEN '已生效'\r\n"
-			+ "ELSE '已失效' end prodStatus FROM v_order_list  item \r\n"
+			+ "ELSE '已失效' end prodStatus,item.category_name cateName,item.category_image cateImg FROM v_order_list  item \r\n"
 			+ " where item.part_id=#{partId} and item.user_id=#{userId} and channel_id=1 LIMIT #{pageStart},#{pageEnd}")
 	public List<OrderItemListOutputDto> getOrderItemList(@Param("userId") String userId,
 			@Param("pageStart") int pageStart, @Param("pageEnd") int pageEnd, @Param("partId") int partId);
 
-	@Select("SELECT item.item_id as itemId,item.goods_image as goodsImage,item.goods_count as goodsCount,\r\n"
+	@Select("SELECT item.order_id as orderId,item.item_id as itemId,item.goods_image as goodsImage,item.goods_count as goodsCount,\r\n"
 			+ "item.goods_name as goodsName,item.goods_price as goodsPrice,item.order_status as orderStatus,FROM_UNIXTIME(item.create_time) as createTime,\r\n"
-			+ "item.pay_fee as payFee,item.total_amount as totalAmount,item.eff_time as effTime,item.exp_time as expTime,effective_time effectiveTime FROM v_news_list  item \r\n"
+			+ "item.pay_fee as payFee,item.total_amount as totalAmount,item.eff_time as effTime,item.exp_time as expTime,item.effective_time effectiveTime FROM v_news_list  item \r\n"
 			+ " where item.part_id=#{partId} and item.user_id=#{userId} and channel_id=1 LIMIT #{pageStart},#{pageEnd}")
 	public List<OrderNewListOutputDto> getOrderNewsList(@Param("userId") String userId,
 			@Param("pageStart") int pageStart, @Param("pageEnd") int pageEnd, @Param("partId") int partId);
@@ -46,15 +46,15 @@ public interface IOrderByPartMapper {
 			@Param("order_status") int order_status, @Param("channel_id") int channel_id,
 			@Param("part_id") int part_id);
 
-	@Insert("insert into order_items(order_id,goods_id,goods_name,goods_image,goods_count,goods_price,goods_desc,total_amount,pay_fee,order_status,create_time,part_id,item_id,eff_time,exp_time,effective_time)\r\n"
-			+ "values(#{order_id},#{goods_id},#{goods_name},#{goods_image},#{goods_count},#{goods_price},#{goods_desc},#{total_amount},#{pay_fee},#{order_status},unix_timestamp(now()),#{part_id},#{item_id},#{effTime},#{expTime},#{effectiveTime})")
+	@Insert("insert into order_items(order_id,goods_id,goods_name,goods_image,goods_count,goods_price,goods_desc,total_amount,pay_fee,order_status,create_time,part_id,item_id,eff_time,exp_time,effective_time,category_name,category_image)\r\n"
+			+ "values(#{order_id},#{goods_id},#{goods_name},#{goods_image},#{goods_count},#{goods_price},#{goods_desc},#{total_amount},#{pay_fee},#{order_status},unix_timestamp(now()),#{part_id},#{item_id},#{effTime},#{expTime},#{effectiveTime},#{cateName},#{cateImg})")
 	public void addOrderItem(@Param("order_id") long order_id, @Param("goods_id") long goods_id,
 			@Param("goods_name") String goods_name, @Param("goods_image") String goods_image,
 			@Param("goods_count") int goods_count, @Param("goods_price") double goods_price,
 			@Param("goods_desc") String goods_desc, @Param("total_amount") int total_amount,
 			@Param("pay_fee") double pay_fee, @Param("order_status") int order_status, @Param("part_id") int part_id,
 			@Param("item_id") long item_id, @Param("effTime") String effTime, @Param("expTime") String expTime,
-			@Param("effectiveTime") String effectiveTime);
+			@Param("effectiveTime") String effectiveTime,@Param("cateName") String cateName,@Param("cateImg") String cateImg);
 
 	@Insert("insert into fail_order_info(order_id,user_id,user_name,phone_no,total_amount,pay_id,pay_fee,pay_note,order_desc,order_status,channel_id,create_time,part_id)\r\n"
 			+ "values(#{order_id},#{user_id},#{user_name},#{phone_no},#{total_amount},#{pay_id},#{pay_fee},#{pay_note},#{order_desc},#{order_status},#{channel_id},unix_timestamp(now()),#{part_id})")
@@ -78,4 +78,8 @@ public interface IOrderByPartMapper {
 	@Insert("insert into order_seq(order_id,seq_index,part_id) values(#{order_id},#{seqIndex},#{partId})")
 	public void addSeqIndex(@Param("order_id") long orderId, @Param("seqIndex") String seqIndex,
 			@Param("partId") int partId);
+	
+	@Select("select IFNULL(sum(pay_fee),0) pay_fee from v_order_sum where part_id=${part_id} and phone_no=#{phone} ")
+	public double getOrderSum(@Param("phone")String phone,@Param("part_id")int part_id);
+	
 }

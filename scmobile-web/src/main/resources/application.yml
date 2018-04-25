@@ -42,6 +42,10 @@ http:
     deploy : "wx.10086.cn"
     local: "221.176.66.251"
     processId : 9000
+    csfurl: "http://10.105.4.50:58080"
+
+
+
 #wechat
 wechat:
    appid : "wx2e7288fdd5f458b7"
@@ -52,5 +56,24 @@ wechat:
 spring:  
   data:  
     mongodb:  
-      uri: mongodb://120.197.17.151:20210/wxcrm  
+      uri: mongodb://120.197.17.151:22001/wxcrm 
+      
+
+#orderLimit
+order:
+   limit: 100
+   tips1: 购买本产品后您当日累计购买金额将大于%s元，为保证资金安全，请输入验证码购买?
+   tips2: 您当日产品累计购买金额已经大于%s元，为保证资金安全，请输入验证码购买?
+   
+#ApiUrl
+api:
+   csf : http://10.105.4.50:58080
+   rest : 10.113.38.84:10000 
+   
+#Deault Grade
+GradeDefault:
+   Name: 倔强青铜
+   Img : /wwwwww.jpg
+    
+   
       

@@ -661,7 +661,7 @@ public class GoodsController {
 			return new ResponseMessage<UserInfoOutputDto>(dtos.getStatus(), true, dtos.getMessage());
 		}
 		userDto.setHeadImg(user.getHeadImg());
-		userDto.setPhoenNo(user.getPhoenNo());
+		userDto.setPhoneNo(user.getPhoenNo());
 		userDto.setUserName(user.getUserName());
 		BrowseCountOutput dto = browseRecordsService.getBrowseCount(user.getUserId());
 		if (dto != null) {

@@ -9,4 +9,6 @@ public class MessageDto {
   private int status;
   private String message;
   private UserInfoDto userInfo;
+  private UserInfoDto endInfo;
+  
 }

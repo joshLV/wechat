@@ -13,5 +13,6 @@ public class GoodsCategoryInfoOutputDto implements Serializable {
 	private String showStyle;
 	private String imageUrl;
 	private int saleCount;
+	private String headPic;
 	private List<GoodsInfoOutputDto> goodsList;
 }

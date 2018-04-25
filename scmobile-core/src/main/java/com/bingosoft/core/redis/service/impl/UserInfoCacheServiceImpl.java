@@ -55,7 +55,7 @@ public class UserInfoCacheServiceImpl implements IUserInfoCacheService{
 		if(dto!=null)
 		{
 			out.setHeadImg(dto.getHeadImg());
-			out.setPhoenNo(dto.getPhoenNo());
+			out.setPhoneNo(dto.getPhoenNo());
 			out.setUserName(dto.getUserName());
 		}
 		return out;

@@ -67,6 +67,17 @@
       <ttl unit="seconds">60</ttl>
     </expiry>
   </cache> 
+   <cache alias="goods_pack" uses-template="heap-cache">
+    <expiry>
+      <ttl unit="seconds">60</ttl>
+    </expiry>
+  </cache> 
+   <cache alias="goods_info_id" uses-template="heap-cache">
+    <expiry>
+      <ttl unit="seconds">60</ttl>
+    </expiry>
+  </cache> 
+  
   
 
 </config>

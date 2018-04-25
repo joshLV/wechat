@@ -17,10 +17,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.bingosoft.common.config.UrlConfig;
+import com.bingosoft.core.domain.service.ISmsService;
+import com.bingosoft.core.domain.service.IUserCsfService;
 import com.bingosoft.core.mycat.service.IBrowseRecordsByPartService;
 import com.bingosoft.core.mycat.service.IGoodsCollectionByPartService;
 import com.bingosoft.core.mycat.service.IOrderByPartService;
 import com.bingosoft.core.mycat.service.IOrderNewsByPartService;
+import com.bingosoft.core.mycat.service.IUserBasicByPartService;
 import com.bingosoft.core.mysql.service.IAdInfoService;
 import com.bingosoft.core.mysql.service.IArticleCategoryService;
 import com.bingosoft.core.mysql.service.IBrowseRecordsService;
@@ -28,9 +31,13 @@ import com.bingosoft.core.mysql.service.IGoodsCollectionService;
 import com.bingosoft.core.mysql.service.IGoodsInfoService;
 import com.bingosoft.core.mysql.service.IOrderNewsService;
 import com.bingosoft.core.mysql.service.IOrderService;
+import com.bingosoft.core.mysql.service.IUserGradeService;
 import com.bingosoft.core.redis.service.IUserInfoCacheService;
+import com.bingosoft.core.web.service.ICsfWebService;
 import com.bingosoft.core.web.service.IOperationService;
 import com.bingosoft.core.web.service.IWebRestService;
+import com.bingosoft.models.config.GradeDefaultConfig;
+import com.bingosoft.models.csf.RealFeeQryRspDto;
 import com.bingosoft.models.dto.AdInfoOutputDto;
 import com.bingosoft.models.dto.ArticleCategoryOutputDto;
 import com.bingosoft.models.dto.ArticleInfoItemOutputDto;
@@ -40,16 +47,19 @@ import com.bingosoft.models.dto.BindUserInfoOutputDto;
 import com.bingosoft.models.dto.BrowseCountOutput;
 import com.bingosoft.models.dto.BrowseInputDto;
 import com.bingosoft.models.dto.BrowseRecords2MonthOutputDto;
+import com.bingosoft.models.dto.GoodsCategoryDto;
 import com.bingosoft.models.dto.GoodsCategoryIdOutputDto;
 import com.bingosoft.models.dto.GoodsCategoryInfoOutputDto;
 import com.bingosoft.models.dto.GoodsCategoryOutputDto;
 import com.bingosoft.models.dto.GoodsCollectionOutputDto;
 import com.bingosoft.models.dto.GoodsCountOutputDto;
 import com.bingosoft.models.dto.GoodsIdCollectionOutputDto;
+import com.bingosoft.models.dto.GoodsInfosOutputDto;
 import com.bingosoft.models.dto.GoodsItemInfoAndProdOutputDto;
 import com.bingosoft.models.dto.GoodsItemInfoOutputDto;
 import com.bingosoft.models.dto.HotCategoryGoodsOutputDto;
 import com.bingosoft.models.dto.HotGoodsCategoryOutputDto;
+import com.bingosoft.models.dto.HotGoodsInfoOutputDto;
 import com.bingosoft.models.dto.JsSignatureDto;
 import com.bingosoft.models.dto.MessageDto;
 import com.bingosoft.models.dto.MessageObject;
@@ -63,8 +73,12 @@ import com.bingosoft.models.dto.OrderShortAddModeOutputDto;
 import com.bingosoft.models.dto.TelPhoneInputDto;
 import com.bingosoft.models.dto.TemplateData;
 import com.bingosoft.models.dto.TemplateMessageInputDto;
+import com.bingosoft.models.dto.UpGradeInfoOutputDto;
 import com.bingosoft.models.dto.UserBalance;
+import com.bingosoft.models.dto.UserBasicCurrentOutputDto;
+import com.bingosoft.models.dto.UserCurGradeOutputDto;
 import com.bingosoft.models.dto.UserFlowInfoOutputDto;
+import com.bingosoft.models.dto.UserGradeUpOutputDto;
 import com.bingosoft.models.dto.UserInfoDto;
 import com.bingosoft.models.dto.UserInfoOutputDto;
 import com.bingosoft.models.input.dto.BrowseRecordInputDto;
@@ -85,9 +99,11 @@ import com.bingosoft.models.rest.dto.SPFeeQueryOutputDto;
 import com.bingosoft.persist.mongodb.dao.IUserPhoneRepository;
 import com.bingosoft.persist.mongodb.dao.IWechatUserInfoRepository;
 import com.bingosoft.utils.CmccDesUtils;
+import com.bingosoft.utils.DateUtils;
 import com.bingosoft.utils.FlowConvertUtils;
 import com.bingosoft.utils.IdGenerator;
 import com.bingosoft.utils.JSONUtils;
+import com.bingosoft.utils.RandomUtils;
 import com.bingosoft.utils.crypt.ShareDesUtils;
 import com.bingosoft.utils.crypt.TokenUtils;
 import com.bingosoft.web.config.UrlParams;
@@ -147,6 +163,21 @@ public class GoodsV2Controller {
 
 	@Autowired
 	IWebRestService webrestService;
+
+	@Autowired
+	ICsfWebService csfWebService;
+
+	@Autowired
+	ISmsService smsService;
+
+	@Autowired
+	IUserCsfService userCsfService;
+
+	@Autowired
+	IUserBasicByPartService userBasicService;
+
+	@Autowired
+	GradeDefaultConfig gradeDefault;
 
 	SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日HH点mm分ss秒");
 	SimpleDateFormat sdt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -354,7 +385,7 @@ public class GoodsV2Controller {
 
 	@ApiOperation(value = "获取话费余额", notes = "获取话费余额")
 	@RequestMapping(value = "/getUserMoney", method = RequestMethod.GET)
-	public ResponseMessage<UserBalance> getUserMoney(HttpServletRequest request) {
+	public ResponseMessage<UserBalance> getUserMoney(HttpServletRequest request, double price) {
 		UserInfoDto userDto = null;
 
 		MessageDto dtos = validateToken(request);
@@ -370,8 +401,39 @@ public class GoodsV2Controller {
 			if (moneyDto.getOutData() != null) {
 				double money = moneyDto.getOutData().getPREPAY_FEE() / 100.0;
 				dto.setBalence(money);
+				dto.setTips(orderService.orderLimit(userDto.getPhoenNo(), getPartId(userDto.getPhoenNo()), price));
 				return new ResponseMessage<UserBalance>(200, true, "成功", dto);
 			}
+
+		} else {
+			dto.setBalence(0.00);
+		}
+		return new ResponseMessage<UserBalance>(400, true, "未获取到", dto);
+
+	}
+
+	@ApiOperation(value = "获取话费余额v2", notes = "获取话费余额v2")
+	@RequestMapping(value = "/getUserMoney.new", method = RequestMethod.GET)
+	public ResponseMessage<UserBalance> getUserMoney2(HttpServletRequest request, double price) {
+		UserInfoDto userDto = null;
+
+		MessageDto dtos = validateToken(request);
+		userDto = dtos.getUserInfo();
+		if (userDto == null) {
+			return new ResponseMessage<UserBalance>(dtos.getStatus(), true, dtos.getMessage());
+		}
+
+		// RestResponseOutputDto<SPFeeQueryOutputDto> moneyDto =
+		// webRestService.sPFeeQuery(userDto.getPhoenNo());
+		RealFeeQryRspDto moneyDto = userCsfService.getUserMoney(userDto.getPhoenNo());
+		UserBalance dto = new UserBalance();
+		dto.setPhoneNo(userDto.getPhoenNo());
+		if (moneyDto != null) {
+
+			dto.setBalence(moneyDto.getCurFee());
+			// dto.setBalence(100);
+			dto.setTips(orderService.orderLimit(userDto.getPhoenNo(), getPartId(userDto.getPhoenNo()), price));
+			return new ResponseMessage<UserBalance>(200, true, "成功", dto);
 
 		} else {
 			dto.setBalence(0.00);
@@ -391,6 +453,143 @@ public class GoodsV2Controller {
 	@ApiOperation(value = "下单商品", notes = "下单商品")
 	@RequestMapping(value = "/orderGoods", method = RequestMethod.POST)
 	public ResponseMessage<String> orderGoods(HttpServletRequest request, @RequestBody OrderInputDto input) {
+		UserInfoDto userDto = null; // new UserInfoDto();
+		// String msg=TemplateTipsMsg.getTips(input.getGoodsId());
+		MessageDto dtos = validateToken(request);
+		userDto = dtos.getUserInfo();
+		if (userDto == null) {
+			return new ResponseMessage<String>(dtos.getStatus(), true, dtos.getMessage());
+		}
+
+		int partId = Integer.valueOf(userDto.getPhoenNo().substring(userDto.getPhoenNo().length() - 1));
+		OrderInfo order = new OrderInfo();
+		order.setOrderId(Long.parseLong(IdGenerator.INSTANCE.nextId()));
+		order.setChannelId(input.getChannelId());
+		order.setUserId(userDto.getUserId());
+		order.setUserName(userDto.getUserName());
+		order.setPhoneNo(userDto.getPhoenNo());
+		order.setPartId(partId);
+		order.setOrderStatus(1);
+
+		List<OrderItem> items = new ArrayList<OrderItem>();
+		GoodsItemInfoAndProdOutputDto rst = goodsInfoService.getGoodsInfoAndProd(input.getGoodsId());
+		if (rst == null) {
+			return new ResponseMessage<String>(400, true, "未找到该产品");
+		}
+		OrderItem item = new OrderItem();
+		order.setPayFee(rst.getGoodsPrice());
+		order.setPayId(1);
+		order.setPayNote("fhdk");
+		item.setCategoryId(rst.getCategoryId());
+		item.setGoodsCount(1);
+		item.setGoodsDesc(rst.getGoodsDesc());
+		item.setGoodsId(input.getGoodsId());
+		item.setOrderId(order.getOrderId());
+		item.setPartId(partId);
+		item.setCreateTime(new Date());
+		item.setGoodsImage(rst.getGoodsImage());
+		item.setGoodsPrice(rst.getGoodsPrice());
+		item.setOrderStatus(1);
+		item.setPartId(partId);
+		item.setGoodsName(rst.getGoodsName());
+		item.setPayFee(rst.getGoodsPrice());
+		item.setTotalAmout(1);
+		item.setCateImg(rst.getCateImg());
+		item.setCateName(rst.getCateName());
+
+		if (StringUtils.isEmpty(rst.getEffectiveTime()))
+			item.setEffectiveTime("");
+		else {
+			item.setEffectiveTime(rst.getEffectiveTime());
+		}
+		String prod_id = "";
+		if (rst.getFeeCode().contains("\\")) {
+			String[] codes = rst.getFeeCode().split("\\\\");
+			prod_id = codes[0];
+		} else {
+			prod_id = rst.getFeeCode();
+		}
+		item.setPROD_PRCID(prod_id);
+		item.setItemId(Long.parseLong(IdGenerator.INSTANCE.nextId()));
+		items.add(item);
+
+		order.setOrderItem(items);
+		OrderShortAddModeOutputDto orderDto = new OrderShortAddModeOutputDto();
+		// orderService.orderGoods(order);
+		String postTime = sdt.format(new Date());
+		try {
+			orderDto = orderService.orderGoodsInto(order);
+			if (orderDto.getRstCode() == 1) {
+				// 如果是微信才更新消息且发送模版
+				if (input.getChannelId() == 1) {
+					if (!StringUtils.isEmpty(userDto.getOpenId())) {
+						TemplateMessageInputDto template = new TemplateMessageInputDto();
+						TemplateData data = new TemplateData();
+						MessageObject first = new MessageObject();
+						MessageObject keyword1 = new MessageObject();
+						// String tips_msg = TemplateTipsMsg.getTips(input.getGoodsId());
+						String tips_msg = rst.getTags();
+						if (StringUtils.isEmpty(tips_msg)) {
+							tips_msg = TemplateTipsMsg.getTips(input.getGoodsId());
+							if (StringUtils.isEmpty(tips_msg)) {
+								tips_msg = "你好，你的流量订购成功,业务将在" + orderDto.getEffDate() + "生效";
+							}
+						}
+
+						// first.setValue("你好，你的流量订购成功,业务将在" + orderDto.getEffDate() + "生效");
+						first.setValue(tips_msg);
+						data.setFirst(first);
+						keyword1.setValue(rst.getGoodsName());
+						MessageObject keyword2 = new MessageObject();
+						keyword2.setValue(userDto.getPhoenNo());
+						MessageObject keyword3 = new MessageObject();
+						keyword3.setValue(sdf.format(new Date()));
+						MessageObject keyword4 = new MessageObject();
+						keyword4.setValue(
+								String.format("成功,你是第%s名办理用户,订购序号：%s", orderDto.getSeqIndex(), orderDto.getSeqIndex()));
+						MessageObject remark = new MessageObject();
+						remark.setValue("点击详情，了解更多！");
+						data.setKeyword1(keyword1);
+						data.setKeyword2(keyword2);
+						data.setKeyword3(keyword3);
+						data.setKeyword4(keyword4);
+						data.setRemark(remark);
+						template.setData(data);
+						template.setTouser(userDto.getOpenId());
+						template.setUrl("http://wx.10086.cn/sichuan/wxzq/llzq/index.html");
+						logger.info("send template message openId:" + userDto.getOpenId());
+						// System.out.println(userDto.getOpenId());
+						// template.setTouser("ovCZJuPE45DnZGGrFPKzIkGws3xE");
+						template.setTemplate_id(TemplateId.OP_SUCCESS);
+						opService.templateMessage(template);
+					}
+					orderNewsService.addOrderNews(userDto.getPhoenNo(), getPartId(userDto.getPhoenNo()));
+				}
+				String url = orderDto.getLinkUrl();
+				if (!StringUtils.isEmpty(url)) {
+					url += "?orderId=" + order.getOrderId();
+				}
+				return new ResponseMessage<String>(200, true, "成功", url);
+			} else {
+				return new ResponseMessage<String>(400, true, "订购失败");
+			}
+		} catch (Exception e) {
+			logger.error("goodsController:" + e.getMessage() + e.getStackTrace());
+			logger.error(JSONUtils.toJson(order));
+			logger.error(JSONUtils.toJson(orderDto));
+			orderLog.info(JSONUtils.toJson(order));
+			try {
+				orderService.timeoutOrder(order, postTime, sdt.format(new Date()));
+			} catch (Exception ex) {
+				logger.error("timeoutOrder:" + ex.getMessage() + ex.getStackTrace());
+			}
+			return new ResponseMessage<String>(400, true, "订购失败");
+		}
+	}
+
+	@ApiOperation(value = "下单商品", notes = "下单商品")
+	@RequestMapping(value = "/orderAllGoods", method = RequestMethod.POST)
+	public ResponseMessage<String> orderAllGoods(HttpServletRequest request, @RequestBody OrderInputDto input) {
 		UserInfoDto userDto = null; // new UserInfoDto();
 		// String msg=TemplateTipsMsg.getTips(input.getGoodsId());
 		MessageDto dtos = validateToken(request);
@@ -454,7 +653,11 @@ public class GoodsV2Controller {
 		// orderService.orderGoods(order);
 		String postTime = sdt.format(new Date());
 		try {
-			orderDto = orderService.orderGoodsInto(order);
+			if (rst.getFeeCode().startsWith("AZ")) {
+				orderDto = orderService.MarkActHandleIntoSame(order);
+			} else {
+				orderDto = orderService.orderGoodsInto(order);
+			}
 			if (orderDto.getRstCode() == 1) {
 				// 如果是微信才更新消息且发送模版
 				if (input.getChannelId() == 1) {
@@ -656,6 +859,153 @@ public class GoodsV2Controller {
 		}
 	}
 
+	@ApiOperation(value = "业务办理", notes = "业务办理")
+	@RequestMapping(value = "/orderGoods.new", method = RequestMethod.POST)
+	public ResponseMessage<UpGradeInfoOutputDto> order2(HttpServletRequest request, @RequestBody OrderInputDto input) {
+		UserInfoDto userDto = null; // new UserInfoDto();
+		// String msg=TemplateTipsMsg.getTips(input.getGoodsId());
+		MessageDto dtos = validateToken(request);
+		userDto = dtos.getUserInfo();
+		if (userDto == null) {
+			return new ResponseMessage<UpGradeInfoOutputDto>(dtos.getStatus(), true, dtos.getMessage());
+		}
+
+		int partId = Integer.valueOf(userDto.getPhoenNo().substring(userDto.getPhoenNo().length() - 1));
+		OrderInfo order = new OrderInfo();
+		order.setOrderId(Long.parseLong(IdGenerator.INSTANCE.nextId()));
+		order.setChannelId(input.getChannelId());
+		order.setUserId(userDto.getUserId());
+		order.setUserName(userDto.getUserName());
+		order.setPhoneNo(userDto.getPhoenNo());
+		order.setPartId(partId);
+		order.setOrderStatus(1);
+
+		List<OrderItem> items = new ArrayList<OrderItem>();
+		GoodsItemInfoAndProdOutputDto rst = goodsInfoService.getGoodsInfoAndProd(input.getGoodsId());
+		if (rst == null) {
+			return new ResponseMessage<UpGradeInfoOutputDto>(400, true, "未找到该产品");
+		}
+		OrderItem item = new OrderItem();
+		order.setPayFee(rst.getGoodsPrice());
+		order.setPayId(1);
+		order.setPayNote("fhdk");
+		item.setCategoryId(rst.getCategoryId());
+		item.setGoodsCount(1);
+		item.setGoodsDesc(rst.getGoodsDesc());
+		item.setGoodsId(input.getGoodsId());
+		item.setOrderId(order.getOrderId());
+		item.setPartId(partId);
+		item.setCreateTime(new Date());
+		item.setGoodsImage(rst.getGoodsImage());
+		item.setGoodsPrice(rst.getGoodsPrice());
+		item.setOrderStatus(1);
+		item.setPartId(partId);
+		item.setGoodsName(rst.getGoodsName());
+		item.setPayFee(rst.getGoodsPrice());
+		item.setCateImg(rst.getCateImg());
+		item.setCateName(rst.getCateName());
+		item.setTotalAmout(1);
+
+		if (StringUtils.isEmpty(rst.getEffectiveTime()))
+			item.setEffectiveTime("");
+		else {
+			item.setEffectiveTime(rst.getEffectiveTime());
+		}
+		String prod_id = "";
+		if (rst.getFeeCode().contains("\\")) {
+			String[] codes = rst.getFeeCode().split("\\\\");
+			prod_id = codes[0];
+		} else {
+			prod_id = rst.getFeeCode();
+		}
+		item.setPROD_PRCID(prod_id);
+		item.setItemId(Long.parseLong(IdGenerator.INSTANCE.nextId()));
+		items.add(item);
+
+		order.setOrderItem(items);
+		OrderShortAddModeOutputDto orderDto = new OrderShortAddModeOutputDto();
+		// orderService.orderGoods(order);
+		String postTime = sdt.format(new Date());
+		try {
+			orderDto = orderService.orderCsfGoodsInto(order, input.getSmsCode());
+			if (orderDto.getRstCode() == 1) {
+				// 如果是微信才更新消息且发送模版
+				if (input.getChannelId() == 1) {
+					if (!StringUtils.isEmpty(userDto.getOpenId())) {
+						TemplateMessageInputDto template = new TemplateMessageInputDto();
+						TemplateData data = new TemplateData();
+						MessageObject first = new MessageObject();
+						MessageObject keyword1 = new MessageObject();
+						// String tips_msg = TemplateTipsMsg.getTips(input.getGoodsId());
+						String tips_msg = rst.getTags();
+						if (StringUtils.isEmpty(tips_msg)) {
+							tips_msg = TemplateTipsMsg.getTips(input.getGoodsId());
+							if (StringUtils.isEmpty(tips_msg)) {
+								tips_msg = "你好，你的流量订购成功,业务将在" + orderDto.getEffDate() + "生效";
+							}
+						}
+
+						// first.setValue("你好，你的流量订购成功,业务将在" + orderDto.getEffDate() + "生效");
+						first.setValue(tips_msg);
+						data.setFirst(first);
+						keyword1.setValue(rst.getGoodsName());
+						MessageObject keyword2 = new MessageObject();
+						keyword2.setValue(userDto.getPhoenNo());
+						MessageObject keyword3 = new MessageObject();
+						keyword3.setValue(sdf.format(new Date()));
+						MessageObject keyword4 = new MessageObject();
+						// keyword4.setValue(
+						// String.format("成功,你是第%s名办理用户,订购序号：%s", orderDto.getSeqIndex(),
+						// orderDto.getSeqIndex()));
+						//keyword4.setValue(String.format("成功,你是第%s名办理用户", orderDto.getSeqIndex()));
+						keyword4.setValue(
+								String.format("成功,你是第%s名办理用户,订购序号：%s", orderDto.getSeqIndex(), orderDto.getSeqIndex()));
+						MessageObject remark = new MessageObject();
+						remark.setValue("点击详情，了解更多！");
+						data.setKeyword1(keyword1);
+						data.setKeyword2(keyword2);
+						data.setKeyword3(keyword3);
+						data.setKeyword4(keyword4);
+						data.setRemark(remark);
+						template.setData(data);
+						template.setTouser(userDto.getOpenId());
+						template.setUrl("http://wx.10086.cn/sichuan/wxzq/llzqv2/main.html");
+						logger.info("send template message openId:" + userDto.getOpenId());
+						// System.out.println(userDto.getOpenId());
+						// template.setTouser("ovCZJuPE45DnZGGrFPKzIkGws3xE");
+						template.setTemplate_id(TemplateId.OP_SUCCESS);
+						opService.templateMessage(template);
+					}
+					orderNewsService.addOrderNews(userDto.getPhoenNo(), getPartId(userDto.getPhoenNo()));
+				}
+				UpGradeInfoOutputDto grade = new UpGradeInfoOutputDto();
+				grade.setGradeImg(orderDto.getGradeImg());
+				grade.setGradeName(orderDto.getGradeName());
+				grade.setUp(orderDto.isUp());
+				String url = orderDto.getLinkUrl();
+				if (!StringUtils.isEmpty(url)) {
+					url += "?orderId=" + order.getOrderId();
+					grade.setGameUrl(url);
+				}
+				
+				return new ResponseMessage<UpGradeInfoOutputDto>(200, orderDto.isUp(), "成功", grade);
+			} else {
+				return new ResponseMessage<UpGradeInfoOutputDto>(400, true, orderDto.getRetMsg());
+			}
+		} catch (Exception e) {
+			logger.error("goodsController:" + e.getMessage() + e.getStackTrace());
+			logger.error(JSONUtils.toJson(order));
+			logger.error(JSONUtils.toJson(orderDto));
+			orderLog.info(JSONUtils.toJson(order));
+			try {
+				orderService.timeoutOrder(order, postTime, sdt.format(new Date()));
+			} catch (Exception ex) {
+				logger.error("timeoutOrder:" + ex.getMessage() + ex.getStackTrace());
+			}
+			return new ResponseMessage<UpGradeInfoOutputDto>(400, true, "订购失败");
+		}
+	}
+
 	@ApiOperation(value = "获取火爆单品", notes = "获取火爆单品")
 	@RequestMapping(value = "/getHotGoodsCategory", method = RequestMethod.GET)
 	public ResponseMessage<List<HotGoodsCategoryOutputDto>> getHotGoodsCategory(int categoryId, int records) {
@@ -845,6 +1195,7 @@ public class GoodsV2Controller {
 		dto.setSnTotalFlow(snTotalFlow);
 		dto.setGnTotalFlow(gnTotalFlow);
 		dto.setHeadImage(userDto.getHeadImg());
+		dto.setNickName(userDto.getUserName());
 
 		RestResponseOutputDto<SPFeeQueryOutputDto> moneyDto = webRestService.sPFeeQuery(userDto.getPhoenNo());
 
@@ -863,6 +1214,31 @@ public class GoodsV2Controller {
 		return new ResponseMessage<UserFlowInfoOutputDto>(200, true, "成功", dto);
 	}
 
+	@ApiOperation(value = "获取用户流量信息v2", notes = "获取用户流量信息v2")
+	@RequestMapping(value = "/getFlowInfo.new", method = RequestMethod.GET)
+	public ResponseMessage<UserFlowInfoOutputDto> getFlowInfo2(HttpServletRequest request) {
+		UserInfoDto userDto = null;
+		// String code = request.getHeader(tokenHeader);
+		// if (StringUtils.isEmpty(code)) {
+		// return new ResponseMessage<UserFlowInfoOutputDto>(501, false, "非法请求", null);
+		// }
+		MessageDto dtos = validateToken(request);
+		userDto = dtos.getUserInfo();
+		UserFlowInfoOutputDto flowDto = new UserFlowInfoOutputDto();
+		if (userDto == null) {
+			if (dtos.getEndInfo() != null) {
+				flowDto.setHeadImage(dtos.getEndInfo().getHeadImg());
+				flowDto.setNickName(dtos.getEndInfo().getUserName());
+			}
+			return new ResponseMessage<UserFlowInfoOutputDto>(dtos.getStatus(), true, dtos.getMessage(), flowDto);
+		}
+		flowDto = userCsfService.getUserFlow(userDto.getPhoenNo());
+		flowDto.setHeadImage(userDto.getHeadImg());
+		flowDto.setNickName(userDto.getUserName());
+		flowDto.setPhoneNo(userDto.getPhoenNo());
+		return new ResponseMessage<UserFlowInfoOutputDto>(200, true, "成功", flowDto);
+	}
+
 	@ApiOperation(value = "获取用户信息", notes = "获取用户信息")
 	@RequestMapping(value = "/getUserInfo", method = RequestMethod.GET)
 	public ResponseMessage<UserInfoOutputDto> getUserInfo(HttpServletRequest request) {
@@ -871,15 +1247,29 @@ public class GoodsV2Controller {
 		MessageDto dtos = validateToken(request);
 		user = dtos.getUserInfo();
 		if (user == null) {
-			return new ResponseMessage<UserInfoOutputDto>(dtos.getStatus(), true, dtos.getMessage());
+			if (dtos.getEndInfo() != null) {
+				userDto.setHeadImg(dtos.getEndInfo().getHeadImg());
+				userDto.setPhoneNo(dtos.getEndInfo().getPhoenNo());
+				userDto.setUserName(dtos.getEndInfo().getUserName());
+			}
+			return new ResponseMessage<UserInfoOutputDto>(dtos.getStatus(), true, dtos.getMessage(), userDto);
 		}
 		userDto.setHeadImg(user.getHeadImg());
-		userDto.setPhoenNo(user.getPhoenNo());
+		userDto.setPhoneNo(user.getPhoenNo());
 		userDto.setUserName(user.getUserName());
-		BrowseCountOutput dto = browseRecordsService.getBrowseCount(user.getUserId(), getPartId(userDto.getPhoenNo()));
+		BrowseCountOutput dto = browseRecordsService.getBrowseCount(user.getUserId(), getPartId(userDto.getPhoneNo()));
 		if (dto != null) {
 			userDto.setBrowseCount(dto.getBrowseCount());
 			userDto.setColCount(dto.getColCount());
+		}
+		UserBasicCurrentOutputDto output = userBasicService.getUserBasicCur(user.getUserId(),
+				getPartId(userDto.getPhoneNo()));
+		if (output != null) {
+			userDto.setGradeName(output.getGradeName());
+			userDto.setGradeImg(output.getGradeImage());
+		} else {
+			userDto.setGradeName(gradeDefault.getGradeName());
+			userDto.setGradeImg(gradeDefault.getGradeImg());
 		}
 		// String token = request.getHeader(tokenHeader);
 		// token = "user_test01";
@@ -900,6 +1290,46 @@ public class GoodsV2Controller {
 		// return new ResponseMessage<UserInfoOutputDto>(500, true, "登录超时，请重新进入该页面");
 		// }
 		return new ResponseMessage<UserInfoOutputDto>(200, true, "成功", userDto);
+	}
+
+	@ApiOperation(value = "获取用户等级信息", notes = "获取用户等级信息")
+	@RequestMapping(value = "/getUserGrade", method = RequestMethod.GET)
+	public ResponseMessage<UserGradeUpOutputDto> getUserGrade(HttpServletRequest request) {
+		UserGradeUpOutputDto userDto = new UserGradeUpOutputDto();
+		UserInfoDto user = new UserInfoDto();
+		MessageDto dtos = validateToken(request);
+		user = dtos.getUserInfo();
+		if (user == null) {
+			if (dtos.getEndInfo() != null) {
+				userDto.setHeadImg(dtos.getEndInfo().getHeadImg());
+				userDto.setPhone(dtos.getEndInfo().getPhoenNo());
+				userDto.setNickName(dtos.getEndInfo().getUserName());
+			}
+			return new ResponseMessage<UserGradeUpOutputDto>(dtos.getStatus(), true, dtos.getMessage(), userDto);
+		}
+		userDto = userBasicService.getCurGrade(user.getUserId(), getPartId(user.getPhoenNo()));
+		if (userDto != null) {
+			userDto.setHeadImg(user.getHeadImg());
+			userDto.setPhone(user.getPhoenNo());
+			userDto.setNickName(user.getUserName());
+		}
+
+		return new ResponseMessage<UserGradeUpOutputDto>(200, true, "成功", userDto);
+	}
+
+	@ApiOperation(value = "获取用户当前等级信息", notes = "获取用户当前等级信息")
+	@RequestMapping(value = "/getUserCurGrade", method = RequestMethod.GET)
+	public ResponseMessage<UserCurGradeOutputDto> getUserCurGrade(HttpServletRequest request) {
+		UserCurGradeOutputDto userDto = new UserCurGradeOutputDto();
+		UserInfoDto user = new UserInfoDto();
+		MessageDto dtos = validateToken(request);
+		user = dtos.getUserInfo();
+		if (user == null) {
+
+			return new ResponseMessage<UserCurGradeOutputDto>(dtos.getStatus(), true, dtos.getMessage(), userDto);
+		}
+		userDto = userBasicService.getUserCurGrade(user.getUserId(), getPartId(user.getPhoenNo()));
+		return new ResponseMessage<UserCurGradeOutputDto>(200, true, "成功", userDto);
 	}
 
 	@ApiOperation(value = "绑定手机号", notes = "绑定手机号")
@@ -962,6 +1392,55 @@ public class GoodsV2Controller {
 		return new ResponseMessage<List<HotCategoryGoodsOutputDto>>(200, true, "成功", goods);
 	}
 
+	@ApiOperation(value = "获取单品详情", notes = "获取单品详情")
+	@RequestMapping(value = "/getGoodsById", method = RequestMethod.GET)
+	public ResponseMessage<GoodsInfosOutputDto> getGoodsById(HttpServletRequest request, long goodsId) {
+
+		GoodsInfosOutputDto goods = goodsInfoService.getGoodsById(goodsId);
+		return new ResponseMessage<GoodsInfosOutputDto>(200, true, "成功", goods);
+	}
+
+	@ApiOperation(value = "获取分类单品", notes = "获取分类单品列表")
+	@RequestMapping(value = "/getPackageList", method = RequestMethod.GET)
+	public ResponseMessage<List<GoodsCategoryDto>> getPackageList(HttpServletRequest request, int cateId) {
+
+		List<GoodsCategoryDto> goods = goodsInfoService.getPackageList(cateId);
+		return new ResponseMessage<List<GoodsCategoryDto>>(200, true, "成功", goods);
+	}
+
+	@ApiOperation(value = "获取火热单品", notes = "获取火热单品")
+	@RequestMapping(value = "/getHotGoods", method = RequestMethod.GET)
+	public ResponseMessage<List<HotGoodsInfoOutputDto>> getHotGoods(HttpServletRequest request) {
+
+		List<HotGoodsInfoOutputDto> goods = goodsInfoService.getHotgoods();
+		return new ResponseMessage<List<HotGoodsInfoOutputDto>>(200, true, "成功", goods);
+	}
+
+	@ApiOperation(value = "发送验证码", notes = "发送验证码")
+	@RequestMapping(value = "/sendSms", method = RequestMethod.POST)
+	public BaseMessage sendSms(HttpServletRequest request) {
+
+		UserInfoDto user = null;
+		MessageDto dtos = validateToken(request);
+		user = dtos.getUserInfo();
+		if (user == null) {
+			return new BaseMessage(dtos.getStatus(), true, dtos.getMessage());
+		}
+		// return new BaseMessage(200, true, "成功");
+		try {
+			boolean isSend = smsService.SendSms(user.getPhoenNo());
+			return new BaseMessage(200, isSend, "成功");
+		} catch (Exception ex) {
+			try {
+				throw new WechatException(ex.getMessage());
+			} catch (WechatException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return new BaseMessage(400, false, "失败");
+		}
+	}
+
 	@SuppressWarnings("unused")
 	private MessageDto validateToken(HttpServletRequest request) {
 		MessageDto dto = validateBaseToken(request);
@@ -970,7 +1449,9 @@ public class GoodsV2Controller {
 		if (StringUtils.isEmpty(dto.getUserInfo().getPhoenNo())) {
 			dto.setStatus(501);
 			dto.setMessage("您暂未绑定手机号");
+			dto.setEndInfo(dto.getUserInfo());
 			dto.setUserInfo(null);
+
 			return dto;
 		}
 		// dto.setUserInfo(userDto);
@@ -1006,6 +1487,17 @@ public class GoodsV2Controller {
 			dto.setMessage("登录超时，请重新进入该页面");
 			return dto;
 
+		}
+		if (userDto.getTime() != null) {
+			if (!DateUtils.compareValidate(userDto.getTime())) {
+				dto.setStatus(503);
+				dto.setMessage("登录超时，请重新进入该页面");
+				return dto;
+			}
+		} else {
+			dto.setStatus(503);
+			dto.setMessage("登录超时，请重新进入该页面");
+			return dto;
 		}
 		dto.setUserInfo(userDto);
 		return dto;

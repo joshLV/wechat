@@ -1,14 +1,10 @@
-2018-02-07 10:23:40.689 [main] ERROR o.s.b.d.LoggingFailureAnalysisReporter -
-
-***************************
-APPLICATION FAILED TO START
-***************************
-
-Description:
-
-Embedded servlet container failed to start. Port 9876 was already in use.
-
-Action:
-
-Identify and stop the process that's listening on port 9876 or configure this application to listen on another port.
-
+2018-04-20 08:13:46.560 [XNIO-2 task-2] ERROR c.b.w.e.GlobalExceptionHandler -Request method 'POST' not supported[Ljava.lang.StackTraceElement;@314d52da
+2018-04-20 08:55:08.955 [XNIO-2 task-7] ERROR c.b.w.e.GlobalExceptionHandler -Request method 'POST' not supported[Ljava.lang.StackTraceElement;@64cea94a
+2018-04-20 08:55:21.108 [XNIO-2 task-9] ERROR c.b.w.e.GlobalExceptionHandler -Request method 'GET' not supported[Ljava.lang.StackTraceElement;@7292890b
+2018-04-20 09:48:58.916 [XNIO-2 task-3] ERROR c.b.web.controller.GoodsV2Controller -goodsController:For input string: "20180420085107"[Ljava.lang.StackTraceElement;@1e6749a7
+2018-04-20 09:48:58.938 [XNIO-2 task-3] ERROR c.b.web.controller.GoodsV2Controller -{"orderId":1804200948547871424,"userId":"13908082769","userName":"與夢同荇","phoneNo":"13908082769","totalAmout":0,"payId":1,"payFee":5.0,"payNote":"fhdk","orderStatus":1,"channelId":1,"partId":9,"orderItem":[{"itemId":1804200948557221424,"PROD_PRCID":"ACAZ19608","orderId":1804200948547871424,"partId":9,"goodsId":10009,"goodsName":"5元叠加包","goodsImage":"images/img-package03.png","goodsCount":1,"goodsPrice":5.0,"goodsDesc":"\u003cp\u003e5元30M，立即到账，当月有效，当月最多可订购10次，更多介绍见业务详情\u003c/p\u003e","totalAmout":1.0,"payFee":5.0,"orderStatus":1,"createTime":"Apr 20, 2018 9:48:55 AM","categoryId":1003,"effectiveTime":"立即到账","cateName":"月流量加油包","cateImg":"images/pic2.png"}]}
+2018-04-20 09:48:59.007 [XNIO-2 task-3] ERROR c.b.web.controller.GoodsV2Controller -{"rstCode":0,"isUp":false}
+2018-04-20 09:57:00.320 [XNIO-2 task-3] ERROR c.b.web.controller.GoodsV2Controller -goodsController:For input string: "2018-04-20 09:57:00"[Ljava.lang.StackTraceElement;@16e0e30b
+2018-04-20 09:57:00.322 [XNIO-2 task-3] ERROR c.b.web.controller.GoodsV2Controller -{"orderId":1804200956460681424,"userId":"13908082769","userName":"與夢同荇","phoneNo":"13908082769","totalAmout":0,"payId":1,"payFee":5.0,"payNote":"fhdk","orderStatus":1,"channelId":1,"partId":9,"orderItem":[{"itemId":1804200956462301424,"PROD_PRCID":"ACAZ19608","orderId":1804200956460681424,"partId":9,"goodsId":10009,"goodsName":"5元叠加包","goodsImage":"images/img-package03.png","goodsCount":1,"goodsPrice":5.0,"goodsDesc":"\u003cp\u003e5元30M，立即到账，当月有效，当月最多可订购10次，更多介绍见业务详情\u003c/p\u003e","totalAmout":1.0,"payFee":5.0,"orderStatus":1,"createTime":"Apr 20, 2018 9:56:46 AM","categoryId":1003,"effectiveTime":"立即到账","cateName":"月流量加油包","cateImg":"images/pic2.png"}]}
+2018-04-20 09:57:00.324 [XNIO-2 task-3] ERROR c.b.web.controller.GoodsV2Controller -{"rstCode":0,"isUp":false}
+2018-04-20 10:03:07.128 [XNIO-2 task-5] ERROR c.b.w.e.GlobalExceptionHandler -Request method 'GET' not supported[Ljava.lang.StackTraceElement;@7b44f58d

@@ -22,4 +22,6 @@ public class OrderItem {
 	private Date createTime;
 	private int categoryId;
 	private String effectiveTime="";
+	private String cateName;
+	private String cateImg;
 }

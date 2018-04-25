@@ -6,4 +6,5 @@ import lombok.Data;
 public class OrderInputDto {
   private int goodsId;
   private int channelId;
+  private String smsCode;
 }

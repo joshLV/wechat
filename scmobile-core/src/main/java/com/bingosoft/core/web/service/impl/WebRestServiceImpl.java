@@ -8,11 +8,13 @@ import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import com.bingosoft.core.web.service.IWebRestService;
+import com.bingosoft.models.config.ApiUrlConfig;
 import com.bingosoft.models.dto.JsSignatureDto;
 import com.bingosoft.models.dto.UpdateMainChargesOutputDto;
 import com.bingosoft.models.rest.dto.MarkActHandleOutputDto;
@@ -32,13 +34,22 @@ public class WebRestServiceImpl implements IWebRestService {
 
 	private static final Logger logger = LoggerFactory.getLogger(WebRestServiceImpl.class);
 
+//	@Autowired
+//	ApiUrlConfig apiUrl;
+
 	// 10.113.38.75:10000
 	SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
 	SimpleDateFormat sdf_month = new SimpleDateFormat("yyyyMM");
 	// String baseUrl = "10.105.4.50:58080";
 
-	/////////String baseUrl = "10.113.38.75:10000";
+	///////// String baseUrl = "10.113.38.75:10000";
 	String baseUrl = "10.113.38.84:10000";
+
+//	public WebRestServiceImpl() {
+////		if (apiUrl != null)
+////			this.baseUrl = apiUrl.getRestUrl();
+//	}
+
 	@Override
 	public RestResponseOutputDto<RealTimeFeeOutputDto> sYdscOrdQry(String phoneNo) {
 		// TODO Auto-generated method stub
@@ -59,13 +70,12 @@ public class WebRestServiceImpl implements IWebRestService {
 			System.out.println(httpUrl);
 			// String response = HttpsUtil.httpsRequestToString(url, "GET", null);
 			Request request = new Request.Builder().url(httpUrl).build();
-			OkHttpClient client= new OkHttpClient.Builder()
-	                .connectTimeout(15, TimeUnit.SECONDS) //连接超时
-	                .writeTimeout(15, TimeUnit.SECONDS) //写超时
-	                .readTimeout(15, TimeUnit.SECONDS) //读超时
-	                .build();
-			//Response response = new OkHttpClient().newCall(request).execute();
-			Response response =client.newCall(request).execute();
+			OkHttpClient client = new OkHttpClient.Builder().connectTimeout(15, TimeUnit.SECONDS) // 连接超时
+					.writeTimeout(15, TimeUnit.SECONDS) // 写超时
+					.readTimeout(15, TimeUnit.SECONDS) // 读超时
+					.build();
+			// Response response = new OkHttpClient().newCall(request).execute();
+			Response response = client.newCall(request).execute();
 			String result = response.body().string();
 			System.out.println(result);
 			json = JSON.parseObject(result, JsSignatureDto.class);
@@ -97,13 +107,13 @@ public class WebRestServiceImpl implements IWebRestService {
 			logger.info(httpUrl);
 			// String response = HttpsUtil.httpsRequestToString(url, "GET", null);
 			Request request = new Request.Builder().url(httpUrl).build();
-//			OkHttpClient client= new OkHttpClient.Builder()
-//	                .connectTimeout(65, TimeUnit.SECONDS) //连接超时
-//	                .writeTimeout(65, TimeUnit.SECONDS) //写超时
-//	                .readTimeout(65, TimeUnit.SECONDS) //读超时
-//	                .build();
+			// OkHttpClient client= new OkHttpClient.Builder()
+			// .connectTimeout(65, TimeUnit.SECONDS) //连接超时
+			// .writeTimeout(65, TimeUnit.SECONDS) //写超时
+			// .readTimeout(65, TimeUnit.SECONDS) //读超时
+			// .build();
 			Response response = new OkHttpClient().newCall(request).execute();
-			//Response response = client.newCall(request).execute();
+			// Response response = client.newCall(request).execute();
 			String result = response.body().string();
 			logger.info(result);
 			// json = JSON.parseObject(result, new
@@ -113,7 +123,7 @@ public class WebRestServiceImpl implements IWebRestService {
 			// System.out.println(json.getOutData().getPREPAY_FEE());
 		} catch (Exception e) {
 			logger.error("sPFeeQuery:" + e.getMessage() + e.getStackTrace());
-			
+
 		}
 		return json;
 	}
@@ -137,12 +147,11 @@ public class WebRestServiceImpl implements IWebRestService {
 			logger.info(httpUrl);
 			// String response = HttpsUtil.httpsRequestToString(url, "GET", null);
 			Request request = new Request.Builder().url(httpUrl).build();
-			OkHttpClient client= new OkHttpClient.Builder()
-	                .connectTimeout(15, TimeUnit.SECONDS) //连接超时
-	                .writeTimeout(15, TimeUnit.SECONDS) //写超时
-	                .readTimeout(15, TimeUnit.SECONDS) //读超时
-	                .build();
-			//Response response = new OkHttpClient().newCall(request).execute();
+			OkHttpClient client = new OkHttpClient.Builder().connectTimeout(15, TimeUnit.SECONDS) // 连接超时
+					.writeTimeout(15, TimeUnit.SECONDS) // 写超时
+					.readTimeout(15, TimeUnit.SECONDS) // 读超时
+					.build();
+			// Response response = new OkHttpClient().newCall(request).execute();
 			Response response = client.newCall(request).execute();
 			String result = response.body().string();
 			logger.info(result);
@@ -172,12 +181,11 @@ public class WebRestServiceImpl implements IWebRestService {
 			logger.info(httpUrl);
 			// String response = HttpsUtil.httpsRequestToString(url, "GET", null);
 			Request request = new Request.Builder().url(httpUrl).build();
-			OkHttpClient client= new OkHttpClient.Builder()
-	                .connectTimeout(15, TimeUnit.SECONDS) //连接超时
-	                .writeTimeout(15, TimeUnit.SECONDS) //写超时
-	                .readTimeout(15, TimeUnit.SECONDS) //读超时
-	                .build();
-			//Response response = new OkHttpClient().newCall(request).execute();
+			OkHttpClient client = new OkHttpClient.Builder().connectTimeout(15, TimeUnit.SECONDS) // 连接超时
+					.writeTimeout(15, TimeUnit.SECONDS) // 写超时
+					.readTimeout(15, TimeUnit.SECONDS) // 读超时
+					.build();
+			// Response response = new OkHttpClient().newCall(request).execute();
 			Response response = client.newCall(request).execute();
 			String result = response.body().string();
 			logger.info(result);
@@ -215,13 +223,12 @@ public class WebRestServiceImpl implements IWebRestService {
 			logger.info(httpUrl);
 			// String response = HttpsUtil.httpsRequestToString(url, "GET", null);
 			Request request = new Request.Builder().url(httpUrl).build();
-			OkHttpClient client= new OkHttpClient.Builder()
-	                .connectTimeout(65, TimeUnit.SECONDS) //连接超时
-	                .writeTimeout(65, TimeUnit.SECONDS) //写超时
-	                .readTimeout(65, TimeUnit.SECONDS) //读超时
-	                .build();
+			OkHttpClient client = new OkHttpClient.Builder().connectTimeout(65, TimeUnit.SECONDS) // 连接超时
+					.writeTimeout(65, TimeUnit.SECONDS) // 写超时
+					.readTimeout(65, TimeUnit.SECONDS) // 读超时
+					.build();
 			// Request request = new Request.Builder().url("http://www.baidu.com").build();
-			//Response response = new OkHttpClient().newCall(request).execute();
+			// Response response = new OkHttpClient().newCall(request).execute();
 			Response response = client.newCall(request).execute();
 			String result = response.body().string();
 			logger.info(result);
@@ -254,12 +261,11 @@ public class WebRestServiceImpl implements IWebRestService {
 			logger.info(httpUrl);
 			// String response = HttpsUtil.httpsRequestToString(url, "GET", null);
 			Request request = new Request.Builder().url(httpUrl).build();
-			OkHttpClient client= new OkHttpClient.Builder()
-	                .connectTimeout(15, TimeUnit.SECONDS) //连接超时
-	                .writeTimeout(15, TimeUnit.SECONDS) //写超时
-	                .readTimeout(15, TimeUnit.SECONDS) //读超时
-	                .build();
-			//Response response = new OkHttpClient().newCall(request).execute();
+			OkHttpClient client = new OkHttpClient.Builder().connectTimeout(15, TimeUnit.SECONDS) // 连接超时
+					.writeTimeout(15, TimeUnit.SECONDS) // 写超时
+					.readTimeout(15, TimeUnit.SECONDS) // 读超时
+					.build();
+			// Response response = new OkHttpClient().newCall(request).execute();
 			Response response = client.newCall(request).execute();
 			String result = response.body().string();
 			logger.info(result);
@@ -441,7 +447,7 @@ public class WebRestServiceImpl implements IWebRestService {
 			logger.error("MarkActHandle:" + e.getMessage() + e.getStackTrace());
 		}
 		// return json;
-		 return json;
+		return json;
 	}
 
 	@Override
@@ -457,17 +463,17 @@ public class WebRestServiceImpl implements IWebRestService {
 		map.put("year_month", sdf_month.format(new Date()));
 		map.put("qry_type", "0");
 		RestResponseOutputDto<OBFreeQryOutDataOutputDto> json = new RestResponseOutputDto<OBFreeQryOutDataOutputDto>();
-		String httpUrl = String.format("http://%s/rest/1.0/qryOrdPudInfo%s", baseUrl, SignUtils.setHttpGetReqParam(map));
+		String httpUrl = String.format("http://%s/rest/1.0/qryOrdPudInfo%s", baseUrl,
+				SignUtils.setHttpGetReqParam(map));
 		try {
 			logger.info(httpUrl);
 			// String response = HttpsUtil.httpsRequestToString(url, "GET", null);
 			Request request = new Request.Builder().url(httpUrl).build();
-			OkHttpClient client= new OkHttpClient.Builder()
-	                .connectTimeout(65, TimeUnit.SECONDS) //连接超时
-	                .writeTimeout(65, TimeUnit.SECONDS) //写超时
-	                .readTimeout(65, TimeUnit.SECONDS) //读超时
-	                .build();
-			//Response response = new OkHttpClient().newCall(request).execute();
+			OkHttpClient client = new OkHttpClient.Builder().connectTimeout(65, TimeUnit.SECONDS) // 连接超时
+					.writeTimeout(65, TimeUnit.SECONDS) // 写超时
+					.readTimeout(65, TimeUnit.SECONDS) // 读超时
+					.build();
+			// Response response = new OkHttpClient().newCall(request).execute();
 			Response response = client.newCall(request).execute();
 			String result = response.body().string();
 			logger.info(result);
@@ -487,7 +493,7 @@ public class WebRestServiceImpl implements IWebRestService {
 	@Override
 	public RestResponseOutputDto<UpdateMainChargesOutputDto> updateMainCharges(String phoneNo, String prod_prcid) {
 		// TODO Auto-generated method stub
-		
+
 		Date date = new Date();
 		HashMap map = new HashMap();
 		map.put("appKey", "11000442");
@@ -517,9 +523,8 @@ public class WebRestServiceImpl implements IWebRestService {
 			logger.error(httpUrl);
 			logger.error("updateMainCharges:" + e.getMessage() + e.getStackTrace());
 		}
-		 return json;
-		
-		
+		return json;
+
 	}
 
 }

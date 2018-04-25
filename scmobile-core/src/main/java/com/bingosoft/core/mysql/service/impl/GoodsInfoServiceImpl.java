@@ -10,14 +10,18 @@ import org.springframework.util.StringUtils;
 
 import com.bingosoft.core.mysql.service.IGoodsInfoService;
 import com.bingosoft.models.dto.AdInfoOutputDto;
+import com.bingosoft.models.dto.GoodsCategoryDto;
 import com.bingosoft.models.dto.GoodsCategoryIdOutputDto;
 import com.bingosoft.models.dto.GoodsCategoryInfoOutputDto;
 import com.bingosoft.models.dto.GoodsCategoryOutputDto;
 import com.bingosoft.models.dto.GoodsInfoOutputDto;
+import com.bingosoft.models.dto.GoodsInfosOutputDto;
 import com.bingosoft.models.dto.GoodsItemInfoAndProdOutputDto;
 import com.bingosoft.models.dto.GoodsItemInfoOutputDto;
 import com.bingosoft.models.dto.HotCategoryGoodsOutputDto;
 import com.bingosoft.models.dto.HotGoodsCategoryOutputDto;
+import com.bingosoft.models.dto.HotGoodsInfoOutputDto;
+import com.bingosoft.models.dto.HotGoodsOutputDto;
 import com.bingosoft.models.prefix.RedisKeyPrefix;
 import com.bingosoft.persist.mysql.dao.IGoodsInfoMapper;
 import com.bingosoft.persist.mysql.dao.IGoodsMapper;
@@ -139,6 +143,60 @@ public class GoodsInfoServiceImpl implements IGoodsInfoService {
 			outputDto = JsonUtils.toBean(cache, GoodsItemInfoAndProdOutputDto.class);
 		}
 		return outputDto;
+	}
+
+	@Override
+	public List<HotGoodsOutputDto> getHotGoods(int records) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	@Cacheable(value="goods_pack",key="#cateId")
+	public List<GoodsCategoryDto> getPackageList(int cateId) {
+		// TODO Auto-generated method stub
+		String adKey = String.format(RedisKeyPrefix.Goods_Pack_Prefix, cateId);
+		String cache = redisService.get(adKey);
+		List<GoodsCategoryDto> outputDto = null;
+		if (StringUtils.isEmpty(cache)) {
+			outputDto = goodsInfoMapper.getPackageList(cateId);
+			redisService.set(adKey, JsonUtils.toJson(outputDto), 1000);
+		} else {
+			outputDto = JsonUtils.toList(cache, GoodsCategoryDto.class);
+		}
+		return outputDto;
+	}
+
+	@Override
+	@Cacheable(value="goods_info_id",key="#goodsId")
+	public GoodsInfosOutputDto getGoodsById(long goodsId) {
+		// TODO Auto-generated method stub
+		String adKey = String.format(RedisKeyPrefix.Goods_Detail_Prefix + ":prod", goodsId);
+		String cache = redisService.get(adKey);
+		GoodsInfosOutputDto outputDto = null;
+		if (StringUtils.isEmpty(cache)) {
+			outputDto = goodsInfoMapper.getGoodsInfoById(goodsId);
+			redisService.set(adKey, JsonUtils.toJson(outputDto), 10000);
+		} else {
+			outputDto = JsonUtils.toBean(cache, GoodsInfosOutputDto.class);
+		}
+		return outputDto;
+	}
+
+	@Override
+	public List<HotGoodsInfoOutputDto> getHotgoods() {
+		// TODO Auto-generated method stub
+		String adKey = String.format(RedisKeyPrefix.Hot_Goods_Prefix);
+		String cache = redisService.get(adKey);
+		List<HotGoodsInfoOutputDto> outputDto = null;
+		if (StringUtils.isEmpty(cache)) {
+			outputDto = goodsInfoMapper.getHotgoods();
+			redisService.set(adKey, JsonUtils.toJson(outputDto), 10000);
+		} else {
+			outputDto = JsonUtils.toList(cache, HotGoodsInfoOutputDto.class);
+		}
+		return outputDto;
+		
 	}
 
 }

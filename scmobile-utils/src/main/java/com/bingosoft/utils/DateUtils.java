@@ -80,6 +80,24 @@ public class DateUtils {
 		}
 		return date;
 	}
+	
+	/**
+	 * 获取当前时间
+	 * 
+	 * @return
+	 */
+	public static String getDateToStr() {
+
+		SimpleDateFormat sd = new SimpleDateFormat("yyyyMMddHHmmsss");
+		String date = "";
+		try {
+			date = sd.format(new Date());
+		} catch (Exception e) {
+
+			e.printStackTrace();
+		}
+		return date;
+	}
 
 	public static String getDateByStr(Date dd) {
 
@@ -127,5 +145,22 @@ public class DateUtils {
     {  
         return date == null ? " " : new SimpleDateFormat(pattern).format(date);  
     }  
+    
+    
+    public static boolean compareValidate(Date dt)
+    {
+    	Date d=new Date();
+    	long from = dt.getTime()  ;
+    	long to = d.getTime();  
+    	int sec = (int) ((to - from)/(1000 * 60));  
+    	if(sec<=60)
+    	{
+    	  return true;
+    	}
+    	else
+    	{
+    		return false;
+    	}
+    }
 
 }
